@@ -1,6 +1,7 @@
 from os.path import join
 import codecs
 import math
+import os
 from collections import defaultdict as dd
 from global_.embedding import EmbeddingModel
 from datetime import datetime
@@ -18,7 +19,7 @@ def dump_author_features_to_file():
     author features are defined by his/her paper attributes excluding the author's name
     """
     pubs_dict = {}
-    for dir_name in settings.RAW_DATA_DIR:
+    for dir_name in os.listdir(settings.RAW_DATA_DIR):
         case_dir = join(settings.RAW_DATA_DIR, dir_name)
         pubs_dict.update(data_utils.load_json(case_dir, 'pubs.json'))
     print('n_papers', len(pubs_dict))
@@ -88,7 +89,7 @@ def dump_author_embs():
     author embedding is calculated by weighted-average of word vectors with IDF
     """
     emb_model = EmbeddingModel.Instance()
-    idf = data_utils.load_data(settings.GLOBAL_DATA_DIR, 'feature_idf.pkl')
+    idf = data_utils.load_data(settings.PARENT_FEATURE_DIR, 'feature_idf.pkl')
     print('idf loaded')
     LMDB_NAME_FEATURE = 'pub_authors.feature'
     lc_feature = LMDBClient(LMDB_NAME_FEATURE)
