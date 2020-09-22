@@ -17,7 +17,10 @@ def dump_author_features_to_file():
     generate author features by raw publication data and dump to files
     author features are defined by his/her paper attributes excluding the author's name
     """
-    pubs_dict = data_utils.load_json(settings.GLOBAL_DATA_DIR, 'pubs_raw.json')
+    pubs_dict = {}
+    for dir_name in settings.RAW_DATA_DIR:
+        case_dir = join(settings.RAW_DATA_DIR, dir_name)
+        pubs_dict.update(data_utils.load_json(case_dir, 'pubs.json'))
     print('n_papers', len(pubs_dict))
     wf = codecs.open(join(settings.GLOBAL_DATA_DIR, 'author_features.txt'), 'w', encoding='utf-8')
     for i, pid in enumerate(pubs_dict):

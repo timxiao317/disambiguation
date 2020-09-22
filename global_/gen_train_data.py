@@ -34,13 +34,28 @@ class TripletsGenerator:
         self.idf = data_utils.load_data(settings.GLOBAL_DATA_DIR, 'feature_idf.pkl')
 
     def prepare_data(self):
-        self.name2pubs_train = data_utils.load_json(settings.GLOBAL_DATA_DIR, 'name_to_pubs_train_500.json')  # for test
-        self.name2pubs_test = data_utils.load_json(settings.GLOBAL_DATA_DIR, 'name_to_pubs_test_100.json')
-        self.names_train = self.name2pubs_train.keys()
-        print('names train', len(self.names_train))
-        self.names_test = self.name2pubs_test.keys()
-        print('names test', len(self.names_test))
+        self.name2pubs_train = {}
+        self.name2pubs_val = {}
+        self.name2pubs_test = {}
+        for case_name in settings.TRAIN_NAME_LIST:
+            self.name2pubs_train[case_name] = data_utils.load_json(settings.RAW_DATA_DIR, "assignments.json")
+        for case_name in settings.VAL_NAME_LIST:
+            self.name2pubs_val[case_name] = data_utils.load_json(settings.RAW_DATA_DIR, "assignments.json")
+        for case_name in settings.TEST_NAME_LIST:
+            self.name2pubs_test[case_name] = data_utils.load_json(settings.RAW_DATA_DIR, "assignments.json")
+        # self.name2pubs_train = data_utils.load_json(settings.GLOBAL_DATA_DIR, 'name_to_pubs_train_500.json')  # for test            
+        # self.name2pubs_test = data_utils.load_json(settings.GLOBAL_DATA_DIR, 'name_to_pubs_test_100.json')
+        # self.names_train = self.name2pubs_train.keys()
+        # print('names train', len(self.names_train))
+        # self.names_test = self.name2pubs_test.keys()
+        # print('names test', len(self.names_test))
+        self.names_train = settings.TRAIN_NAME_LIST
+        self.names_val = settings.VAL_NAME_LIST
+        self.names_test = settings.TEST_NAME_LIST
         assert not set(self.names_train).intersection(set(self.names_test))
+        assert not set(self.names_train).intersection(set(self.names_val))
+        assert not set(self.names_val).intersection(set(self.names_test))
+
         for name in self.names_train:
             name_pubs_dict = self.name2pubs_train[name]
             for aid in name_pubs_dict:
