@@ -1,7 +1,8 @@
 from __future__ import division
 from __future__ import print_function
-
+import sys
 import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import time
 from os.path import join
 

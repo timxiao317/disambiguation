@@ -1,5 +1,7 @@
 from os.path import join
+import sys
 import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import numpy as np
 from numpy.random import shuffle
 from global_.global_model import GlobalTripletModel

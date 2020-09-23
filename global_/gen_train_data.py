@@ -1,5 +1,7 @@
 from os.path import join
+import sys
 import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import multiprocessing as mp
 import random
 from datetime import datetime
