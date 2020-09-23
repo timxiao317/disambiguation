@@ -1,7 +1,10 @@
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from os.path import join
 import codecs
 import math
-import os
 from collections import defaultdict as dd
 from global_.embedding import EmbeddingModel
 from datetime import datetime
