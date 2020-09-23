@@ -62,7 +62,7 @@ def cal_feature_idf():
     """
     calculate word IDF (Inverse document frequency) using publication data
     """
-    feature_dir = join(settings.DATA_DIR, 'global')
+    feature_dir = settings.FEATURE_DIR
     counter = dd(int)
     cnt = 0
     LMDB_NAME = 'pub_authors.feature'
@@ -89,7 +89,7 @@ def dump_author_embs():
     author embedding is calculated by weighted-average of word vectors with IDF
     """
     emb_model = EmbeddingModel.Instance()
-    idf = data_utils.load_data(settings.PARENT_FEATURE_DIR, 'feature_idf.pkl')
+    idf = data_utils.load_data(settings.FEATURE_DIR, 'feature_idf.pkl')
     print('idf loaded')
     LMDB_NAME_FEATURE = 'pub_authors.feature'
     lc_feature = LMDBClient(LMDB_NAME_FEATURE)

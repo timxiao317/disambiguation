@@ -31,7 +31,7 @@ class TripletsGenerator:
     def __init__(self, train_scale=10000):
         self.prepare_data()
         self.save_size = train_scale
-        self.idf = data_utils.load_data(settings.PARENT_FEATURE_DIR, 'feature_idf.pkl')
+        self.idf = data_utils.load_data(settings.FEATURE_DIR, 'feature_idf.pkl')
 
     def prepare_data(self):
         self.name2pubs_train = {}

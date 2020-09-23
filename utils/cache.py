@@ -4,18 +4,18 @@ import lmdb
 from utils import data_utils
 from utils import settings
 
-map_size = 1099511627776
+map_size = 68719476736
 
 
 class LMDBClient(object):
 
     def __init__(self, name, readonly=False):
-        try:
-            lmdb_dir = join(settings.DATA_DIR, 'lmdb')
-            os.makedirs(lmdb_dir, exist_ok=True)
-            self.db = lmdb.open(join(lmdb_dir, name), map_size=map_size, readonly=readonly)
-        except Exception as e:
-            print(e)
+        # try:
+        lmdb_dir = join(settings.DATA_DIR, 'lmdb')
+        os.makedirs(lmdb_dir, exist_ok=True)
+        self.db = lmdb.open(join(lmdb_dir, name), map_size=map_size, readonly=readonly)
+        # except Exception as e:
+        #     print(e)
 
     def get(self, key):
         with self.db.begin() as txn:
