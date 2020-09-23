@@ -40,11 +40,11 @@ class TripletsGenerator:
         self.name2pubs_val = {}
         self.name2pubs_test = {}
         for case_name in settings.TRAIN_NAME_LIST:
-            self.name2pubs_train[case_name] = data_utils.load_json(settings.RAW_DATA_DIR, "assignments.json")
+            self.name2pubs_train[case_name] = data_utils.load_json(join(settings.RAW_DATA_DIR, case_name), "assignments.json")
         for case_name in settings.VAL_NAME_LIST:
-            self.name2pubs_val[case_name] = data_utils.load_json(settings.RAW_DATA_DIR, "assignments.json")
+            self.name2pubs_val[case_name] = data_utils.load_json(join(settings.RAW_DATA_DIR, case_name), "assignments.json")
         for case_name in settings.TEST_NAME_LIST:
-            self.name2pubs_test[case_name] = data_utils.load_json(settings.RAW_DATA_DIR, "assignments.json")
+            self.name2pubs_test[case_name] = data_utils.load_json(join(settings.RAW_DATA_DIR, case_name), "assignments.json")
         # self.name2pubs_train = data_utils.load_json(settings.GLOBAL_DATA_DIR, 'name_to_pubs_train_500.json')  # for test            
         # self.name2pubs_test = data_utils.load_json(settings.GLOBAL_DATA_DIR, 'name_to_pubs_test_100.json')
         # self.names_train = self.name2pubs_train.keys()

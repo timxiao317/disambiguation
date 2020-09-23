@@ -26,7 +26,7 @@ def dump_inter_emb():
     trained_global_model = global_model.load_triplets_model()
     name_to_pubs_test = {}
     for case_name in settings.TEST_NAME_LIST:
-        name_to_pubs_test[case_name] = data_utils.load_json(settings.RAW_DATA_DIR, "assignments.json")
+        name_to_pubs_test[case_name] = data_utils.load_json(join(settings.RAW_DATA_DIR, case_name), "assignments.json")
     # name_to_pubs_test = data_utils.load_json(settings.GLOBAL_DATA_DIR, 'name_to_pubs_test_100.json')
     for name in name_to_pubs_test:
         print('name', name)
@@ -55,7 +55,7 @@ def gen_local_data(idf_threshold=10):
     """
     name_to_pubs_test = {}
     for case_name in settings.TEST_NAME_LIST:
-        name_to_pubs_test[case_name] = data_utils.load_json(settings.RAW_DATA_DIR, "assignments.json")
+        name_to_pubs_test[case_name] = data_utils.load_json(join(settings.RAW_DATA_DIR, case_name), "assignments.json")
     # name_to_pubs_test = data_utils.load_json(settings.GLOBAL_DATA_DIR, 'name_to_pubs_test_100.json')
     idf = data_utils.load_data(settings.FEATURE_DIR, 'feature_idf.pkl')
     INTER_LMDB_NAME = 'author_triplets.emb'
