@@ -38,7 +38,7 @@ def pairwise_precision_recall_f1(preds, truths):
 
 
 def cal_f1(prec, rec):
-    return 2*prec*rec/(prec+rec)
+    return 2 * prec * rec / (prec + rec)
 
 
 def get_hidden_output(model, inp):
@@ -48,8 +48,8 @@ def get_hidden_output(model, inp):
 
 
 def predict(anchor_emb, test_embs):
-    score1 = np.linalg.norm(anchor_emb-test_embs[0])
-    score2 = np.linalg.norm(anchor_emb-test_embs[1])
+    score1 = np.linalg.norm(anchor_emb - test_embs[0])
+    score2 = np.linalg.norm(anchor_emb - test_embs[1])
     return [score1, score2]
 
 

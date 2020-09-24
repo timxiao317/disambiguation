@@ -1,6 +1,7 @@
 from os.path import join
 import sys
 import os
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import multiprocessing as mp
 import random
@@ -40,11 +41,14 @@ class TripletsGenerator:
         self.name2pubs_val = {}
         self.name2pubs_test = {}
         for case_name in settings.TRAIN_NAME_LIST:
-            self.name2pubs_train[case_name] = data_utils.load_json(join(settings.RAW_DATA_DIR, case_name), "assignments.json")
+            self.name2pubs_train[case_name] = data_utils.load_json(join(settings.RAW_DATA_DIR, case_name),
+                                                                   "assignments.json")
         for case_name in settings.VAL_NAME_LIST:
-            self.name2pubs_val[case_name] = data_utils.load_json(join(settings.RAW_DATA_DIR, case_name), "assignments.json")
+            self.name2pubs_val[case_name] = data_utils.load_json(join(settings.RAW_DATA_DIR, case_name),
+                                                                 "assignments.json")
         for case_name in settings.TEST_NAME_LIST:
-            self.name2pubs_test[case_name] = data_utils.load_json(join(settings.RAW_DATA_DIR, case_name), "assignments.json")
+            self.name2pubs_test[case_name] = data_utils.load_json(join(settings.RAW_DATA_DIR, case_name),
+                                                                  "assignments.json")
         # self.name2pubs_train = data_utils.load_json(settings.GLOBAL_DATA_DIR, 'name_to_pubs_train_500.json')  # for test            
         # self.name2pubs_test = data_utils.load_json(settings.GLOBAL_DATA_DIR, 'name_to_pubs_test_100.json')
         # self.names_train = self.name2pubs_train.keys()
@@ -80,7 +84,7 @@ class TripletsGenerator:
         else:
             sample_from_pids = self.pids_test
         while True:
-            idx = random.randint(0, len(sample_from_pids)-1)
+            idx = random.randint(0, len(sample_from_pids) - 1)
             pid = sample_from_pids[idx]
             if pid not in not_in_pids:
                 return pid
@@ -153,7 +157,7 @@ class TripletsGenerator:
 
         while True:
             if cnt % 1000 == 0:
-                print('get', cnt, datetime.now()-start_time)
+                print('get', cnt, datetime.now() - start_time)
             emb1, emb_pos, emb_neg = emb_q.get()
             if emb1 is False:
                 producer_p.terminate()
@@ -177,7 +181,7 @@ class TripletsGenerator:
         f_idx = 0
         for i, t in enumerate(triplets):
             if i % 100 == 0:
-                print(i, datetime.now()-start_time)
+                print(i, datetime.now() - start_time)
             emb_anc, emb_pos, emb_neg = t[0], t[1], t[2]
             anchor_embs.append(emb_anc)
             pos_embs.append(emb_pos)

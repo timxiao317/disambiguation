@@ -127,7 +127,8 @@ class GCNModelVAE(Model):
                                           dropout=self.dropout,
                                           logging=self.logging)(self.hidden1)
 
-        self.z = self.z_mean + tf.random_normal([self.n_samples, FLAGS.hidden2]) * tf.exp(self.z_log_std)  # element-wise
+        self.z = self.z_mean + tf.random_normal([self.n_samples, FLAGS.hidden2]) * tf.exp(
+            self.z_log_std)  # element-wise
 
         self.reconstructions = InnerProductDecoder(input_dim=FLAGS.hidden2,
                                                    act=lambda x: x,

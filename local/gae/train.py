@@ -2,6 +2,7 @@ from __future__ import division
 from __future__ import print_function
 import sys
 import os
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 import time
 from os.path import join
@@ -120,7 +121,6 @@ def gae_for_na(name):
 
     # Train model
     for epoch in range(FLAGS.epochs):
-
         t = time.time()
         # Construct feed dictionary
         feed_dict = construct_feed_dict(adj_norm, adj_label, features, placeholders)
@@ -141,7 +141,7 @@ def gae_for_na(name):
     n_clusters = len(set(labels))
     emb_norm = normalize_vectors(emb)
     clusters_pred = clustering(emb_norm, num_clusters=n_clusters)
-    prec, rec, f1 =  pairwise_precision_recall_f1(clusters_pred, labels)
+    prec, rec, f1 = pairwise_precision_recall_f1(clusters_pred, labels)
     print('pairwise precision', '{:.5f}'.format(prec),
           'recall', '{:.5f}'.format(rec),
           'f1', '{:.5f}'.format(f1))
@@ -170,8 +170,8 @@ def main():
         macro_rec = metrics[1] / cnt
         macro_f1 = cal_f1(macro_prec, macro_rec)
         print('average until now', [macro_prec, macro_rec, macro_f1])
-        time_acc = time.time()-start_time
-        print(cnt, 'names', time_acc, 'avg time', time_acc/cnt)
+        time_acc = time.time() - start_time
+        print(cnt, 'names', time_acc, 'avg time', time_acc / cnt)
     macro_prec = metrics[0] / cnt
     macro_rec = metrics[1] / cnt
     macro_f1 = cal_f1(macro_prec, macro_rec)

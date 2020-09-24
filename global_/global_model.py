@@ -1,6 +1,7 @@
 from os.path import join
 import sys
 import os
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import numpy as np
 from keras import backend as K
@@ -68,9 +69,9 @@ class GlobalTripletModel:
 
     @staticmethod
     def create_triplet_model():
-        emb_anchor = Input(shape=(EMB_DIM, ), name='anchor_input')
-        emb_pos = Input(shape=(EMB_DIM, ), name='pos_input')
-        emb_neg = Input(shape=(EMB_DIM, ), name='neg_input')
+        emb_anchor = Input(shape=(EMB_DIM,), name='anchor_input')
+        emb_pos = Input(shape=(EMB_DIM,), name='pos_input')
+        emb_neg = Input(shape=(EMB_DIM,), name='neg_input')
 
         # shared layers
         layer1 = Dense(128, activation='relu', name='first_emb_layer')
@@ -149,4 +150,3 @@ if __name__ == '__main__':
     global_model = GlobalTripletModel(data_scale=1000000)
     global_model.train_triplets_model()
     print('done')
-    

@@ -16,7 +16,6 @@ def dump_json(obj, wfpath, wfname, indent=None):
         json.dump(obj, wf, ensure_ascii=False, indent=indent)
 
 
-
 def dump_data(obj, wfpath, wfname):
     with open(os.path.join(wfpath, wfname), 'wb') as wf:
         pickle.dump(obj, wf)

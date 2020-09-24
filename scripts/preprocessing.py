@@ -1,5 +1,6 @@
 import sys
 import os
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from os.path import join
@@ -29,7 +30,7 @@ def dump_author_features_to_file():
     wf = codecs.open(join(settings.GLOBAL_DATA_DIR, 'author_features.txt'), 'w', encoding='utf-8')
     for i, pid in enumerate(pubs_dict):
         if i % 1000 == 0:
-            print(i, datetime.now()-start_time)
+            print(i, datetime.now() - start_time)
         paper = pubs_dict[pid]
         if "title" not in paper or "authors" not in paper:
             continue
@@ -102,7 +103,7 @@ def dump_author_embs():
     with lc_feature.db.begin() as txn:
         for k in txn.cursor():
             if cnt % 1000 == 0:
-                print('cnt', cnt, datetime.now()-start_time)
+                print('cnt', cnt, datetime.now() - start_time)
             cnt += 1
             pid_order = k[0].decode('utf-8')
             features = data_utils.deserialize_embedding(k[1])
@@ -121,4 +122,4 @@ if __name__ == '__main__':
     emb_model.train('aminer')  # training word embedding model
     cal_feature_idf()
     dump_author_embs()
-    print('done', datetime.now()-start_time)
+    print('done', datetime.now() - start_time)
