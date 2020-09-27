@@ -34,7 +34,7 @@ def pairwise_precision_recall_f1(preds, truths):
         f1 = 0.
     else:
         f1 = (2 * precision * recall) / (precision + recall)
-    return precision, recall, f1
+    return tp, fp, fn, precision, recall, f1
 
 
 def cal_f1(prec, rec):
