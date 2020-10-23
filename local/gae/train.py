@@ -47,7 +47,7 @@ start_time = time.time()
 
 def gae_for_na(name):
     """
-    train and evaluate disambiguation results for a specific name
+    train and evaluate YUTAO results for a specific name
     :param name:  author name
     :return: evaluation results
     """
@@ -161,8 +161,9 @@ def main():
     tp_fp_fn_sum = np.zeros(3)
     for name in names:
         tp_fp_fn, cur_metric, num_nodes, n_clusters = gae_for_na(name)
-        wf.write('{0},{1},{2},{3:.5f},{4:.5f},{5:.5f}\n'.format(
-            name, num_nodes, n_clusters, cur_metric[0], cur_metric[1], cur_metric[2]))
+
+        wf.write('{0},{1},{2},{3:.5f},{4:.5f},{5:.5f},{6:.5f},{7:.5f},{8:.5f},\n'.format(
+            name, num_nodes, n_clusters, cur_metric[0], cur_metric[1], cur_metric[2], *tp_fp_fn))
         wf.flush()
         for i, m in enumerate(cur_metric):
             metrics[i] += m
