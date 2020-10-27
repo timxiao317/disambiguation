@@ -141,6 +141,7 @@ def gae_for_na(name):
     n_clusters = len(set(labels))
     emb_norm = normalize_vectors(emb)
     clusters_pred = clustering(emb_norm, num_clusters=n_clusters)
+    print(len(clusters_pred), len(labels))
     tp, fp, fn, prec, rec, f1 = pairwise_precision_recall_f1(clusters_pred, labels)
     print('pairwise precision', '{:.5f}'.format(prec),
           'recall', '{:.5f}'.format(rec),
@@ -155,15 +156,15 @@ def load_test_names():
 def main():
     names = load_test_names()
     wf = codecs.open(join(settings.OUT_DIR, 'local_clustering_results.csv'), 'w', encoding='utf-8')
-    wf.write('name,n_pubs,n_clusters,precision,recall,f1\n')
+    # wf.write('name,n_pubs,n_clusters,precision,recall,f1\n')
     metrics = np.zeros(3)
     cnt = 0
     tp_fp_fn_sum = np.zeros(3)
     for name in names:
         tp_fp_fn, cur_metric, num_nodes, n_clusters = gae_for_na(name)
 
-        wf.write('{0},{1},{2},{3:.5f},{4:.5f},{5:.5f},{6:.5f},{7:.5f},{8:.5f},\n'.format(
-            name, num_nodes, n_clusters, cur_metric[0], cur_metric[1], cur_metric[2], *tp_fp_fn))
+        # wf.write('{0},{1},{2},{3:.5f},{4:.5f},{5:.5f},{6:.5f},{7:.5f},{8:.5f},\n'.format(
+        #     name, num_nodes, n_clusters, cur_metric[0], cur_metric[1], cur_metric[2], *tp_fp_fn))
         wf.flush()
         for i, m in enumerate(cur_metric):
             metrics[i] += m
@@ -182,8 +183,8 @@ def main():
     micro_precision = tp / (tp + fp)
     micro_recall = tp / (tp + fn)
     micro_f1 = 2 * micro_precision * micro_recall / (micro_precision + micro_recall)
-    wf.write('average,,,{0:.5f},{1:.5f},{2:.5f},{3:.5f},{4:5f},{5:5f}\n'.format(
-        macro_prec, macro_rec, macro_f1, micro_precision, micro_recall, micro_f1))
+    # wf.write('average,,,{0:.5f},{1:.5f},{2:.5f},{3:.5f},{4:5f},{5:5f}\n'.format(
+    #     macro_prec, macro_rec, macro_f1, micro_precision, micro_recall, micro_f1))
     wf.close()
 
 
