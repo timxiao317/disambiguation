@@ -141,7 +141,7 @@ def gae_for_na(name):
     n_clusters = len(set(labels))
     emb_norm = normalize_vectors(emb)
     clusters_pred = clustering(emb_norm, num_clusters=n_clusters)
-    print(len(clusters_pred), len(labels))
+    print(labels)
     tp, fp, fn, prec, rec, f1 = pairwise_precision_recall_f1(clusters_pred, labels)
     print('pairwise precision', '{:.5f}'.format(prec),
           'recall', '{:.5f}'.format(rec),
