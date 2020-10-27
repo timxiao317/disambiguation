@@ -161,6 +161,7 @@ def main():
     cnt = 0
     tp_fp_fn_sum = np.zeros(3)
     for name in names:
+        print(name)
         tp_fp_fn, cur_metric, num_nodes, n_clusters = gae_for_na(name)
 
         # wf.write('{0},{1},{2},{3:.5f},{4:.5f},{5:.5f},{6:.5f},{7:.5f},{8:.5f},\n'.format(
