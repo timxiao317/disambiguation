@@ -133,9 +133,9 @@ def gae_for_na(name):
         avg_cost = outs[1]
         avg_accuracy = outs[2]
 
-        print("Epoch:", '%04d' % (epoch + 1), "train_loss=", "{:.5f}".format(avg_cost),
-              "train_acc=", "{:.5f}".format(avg_accuracy),
-              "time=", "{:.5f}".format(time.time() - t))
+        # print("Epoch:", '%04d' % (epoch + 1), "train_loss=", "{:.5f}".format(avg_cost),
+        #       "train_acc=", "{:.5f}".format(avg_accuracy),
+        #       "time=", "{:.5f}".format(time.time() - t))
 
     emb = get_embs()
     n_clusters = len(set(labels))
