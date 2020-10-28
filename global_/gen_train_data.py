@@ -11,9 +11,7 @@ from utils.cache import LMDBClient
 from utils import data_utils
 from utils import settings
 
-LMDB_NAME = "author_100.emb.weighted"
-lc = LMDBClient(dataset_name, LMDB_NAME)
-start_time = datetime.now()
+
 
 """
 This class generates triplets of author embeddings to train global model
@@ -208,6 +206,9 @@ if __name__ == '__main__':
     parser.add_argument("--dataset_name", default="whoiswho_new", type=str)
     args = parser.parse_args()
     dataset_name = args.dataset_name
+    LMDB_NAME = "author_100.emb.weighted"
+    lc = LMDBClient(dataset_name, LMDB_NAME)
+    start_time = datetime.now()
     data_gen = TripletsGenerator(dataset_name, train_scale=1000000)
     data_gen.dump_triplets(role='train')
     data_gen.dump_triplets(role='test')
