@@ -26,7 +26,7 @@ def dump_inter_emb(dataset_name):
     lc_input = LMDBClient(dataset_name, LMDB_NAME)
     INTER_LMDB_NAME = 'author_triplets.emb'
     lc_inter = LMDBClient(dataset_name, INTER_LMDB_NAME)
-    global_model = GlobalTripletModel(data_scale=1000000)
+    global_model = GlobalTripletModel(dataset_name, data_scale=1000000)
     trained_global_model = global_model.load_triplets_model()
     name_to_pubs_test = {}
     _, _, TEST_NAME_LIST = settings.get_split_name_list(dataset_name)
