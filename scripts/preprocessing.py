@@ -97,9 +97,9 @@ def dump_author_embs():
     idf = data_utils.load_data(settings.get_feature_dir(dataset_name), 'feature_idf.pkl')
     print('idf loaded')
     LMDB_NAME_FEATURE = 'pub_authors.feature'
-    lc_feature = LMDBClient(LMDB_NAME_FEATURE)
+    lc_feature = LMDBClient(dataset_name, LMDB_NAME_FEATURE)
     LMDB_NAME_EMB = "author_100.emb.weighted"
-    lc_emb = LMDBClient(LMDB_NAME_EMB)
+    lc_emb = LMDBClient(dataset_name, LMDB_NAME_EMB)
     cnt = 0
     with lc_feature.db.begin() as txn:
         for k in txn.cursor():

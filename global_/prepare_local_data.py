@@ -25,7 +25,7 @@ def dump_inter_emb(dataset_name):
     LMDB_NAME = "author_100.emb.weighted"
     lc_input = LMDBClient(dataset_name, LMDB_NAME)
     INTER_LMDB_NAME = 'author_triplets.emb'
-    lc_inter = LMDBClient(INTER_LMDB_NAME)
+    lc_inter = LMDBClient(dataset_name, INTER_LMDB_NAME)
     global_model = GlobalTripletModel(data_scale=1000000)
     trained_global_model = global_model.load_triplets_model()
     name_to_pubs_test = {}
@@ -65,9 +65,9 @@ def gen_local_data(idf_threshold=10):
     # name_to_pubs_test = data_utils.load_json(settings.get_global_data_dir(dataset_name), 'name_to_pubs_test_100.json')
     idf = data_utils.load_data(settings.get_feature_dir(dataset_name), 'feature_idf.pkl')
     INTER_LMDB_NAME = 'author_triplets.emb'
-    lc_inter = LMDBClient(INTER_LMDB_NAME)
+    lc_inter = LMDBClient(dataset_name, INTER_LMDB_NAME)
     LMDB_AUTHOR_FEATURE = "pub_authors.feature"
-    lc_feature = LMDBClient(LMDB_AUTHOR_FEATURE)
+    lc_feature = LMDBClient(dataset_name, LMDB_AUTHOR_FEATURE)
     graph_dir = join(settings.get_data_dir(dataset_name), 'local', 'graph-{}'.format(idf_threshold))
     os.makedirs(graph_dir, exist_ok=True)
     for i, name in enumerate(name_to_pubs_test):
