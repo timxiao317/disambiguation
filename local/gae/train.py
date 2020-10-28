@@ -39,6 +39,8 @@ flags.DEFINE_float('dropout', 0., 'Dropout rate (1 - keep probability).')
 
 flags.DEFINE_string('model', 'gcn_vae', 'Model string.')
 flags.DEFINE_string('name', 'hui_fang', 'Dataset string.')
+flags.DEFINE_string('dataset_name', "whoiswho_new", "")
+
 # flags.DEFINE_integer('features', 1, 'Whether to use features (1) or not (0).')
 flags.DEFINE_integer('is_sparse', 0, 'Whether input features are sparse.')
 
@@ -194,8 +196,8 @@ if __name__ == '__main__':
     # gae_for_na('hongbin_liang')
     # gae_for_na('j_yu')
     # gae_for_na('s_yu')
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--dataset_name", default="whoiswho_new", type=str)
-    args = parser.parse_args()
-    dataset_name = args.dataset_name
+    # parser = argparse.ArgumentParser()
+    # parser.add_argument("--dataset_name", default="whoiswho_new", type=str)
+    # args = parser.parse_args()
+    dataset_name = FLAGS.dataset_name
     main(dataset_name)
