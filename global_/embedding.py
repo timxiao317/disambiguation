@@ -36,10 +36,10 @@ class EmbeddingModel:
         self.model = Word2Vec(
             data, size=size, window=5, min_count=5, workers=20,
         )
-        self.model.save(join(settings.get_emb_data_dir(self.dataset_name), '{}.emb'.format(self.dataset_name)))
+        self.model.save(join(settings.get_embed_data_dir(self.dataset_name), '{}.emb'.format(self.dataset_name)))
 
     def load(self):
-        self.model = Word2Vec.load(join(settings.get_emb_data_dir(self.dataset_name), '{}.emb'.format(self.dataset_name)))
+        self.model = Word2Vec.load(join(settings.get_embed_data_dir(self.dataset_name), '{}.emb'.format(self.dataset_name)))
         return self.model
 
     def project_embedding(self, tokens, idf=None):
