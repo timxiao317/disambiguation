@@ -31,10 +31,10 @@ class TripletsGenerator:
     batch_size = 100000
 
     def __init__(self, dataset_name, train_scale=10000):
+        self.dataset_name = dataset_name
         self.prepare_data()
         self.save_size = train_scale
         self.idf = data_utils.load_data(settings.get_feature_dir(dataset_name), 'feature_idf.pkl')
-        self.dataset_name = dataset_name
 
     def prepare_data(self):
         self.name2pubs_train = {}
