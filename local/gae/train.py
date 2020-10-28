@@ -55,7 +55,7 @@ def gae_for_na(name):
     :param name:  author name
     :return: evaluation results
     """
-    adj, features, labels = load_local_data(name=name)
+    adj, features, labels = load_local_data(dataset_name, name=name)
 
     # Store original adjacency matrix (without diagonal entries) for later
     adj_orig = adj
