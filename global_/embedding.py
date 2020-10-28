@@ -15,14 +15,14 @@ EMB_DIM = 100
 @Singleton
 class EmbeddingModel:
 
-    def __init__(self, name="aminer"):
+    def __init__(self, dataset_name="aminer"):
         self.model = None
-        self.name = name
+        self.dataset_name = dataset_name
 
     def train(self, wf_name, size=EMB_DIM):
         data = []
         LMDB_NAME = 'pub_authors.feature'
-        lc = LMDBClient(LMDB_NAME)
+        lc = LMDBClient(self.dataset_name, LMDB_NAME)
         author_cnt = 0
         with lc.db.begin() as txn:
             for k in txn.cursor():
@@ -36,10 +36,10 @@ class EmbeddingModel:
         self.model = Word2Vec(
             data, size=size, window=5, min_count=5, workers=20,
         )
-        self.model.save(join(settings.EMB_DATA_DIR, '{}.emb'.format(wf_name)))
+        self.model.save(join(settings.get_emb_data_dir(self.dataset_name), '{}.emb'.format(wf_name)))
 
-    def load(self, name):
-        self.model = Word2Vec.load(join(settings.EMB_DATA_DIR, '{}.emb'.format(name)))
+    def load(self):
+        self.model = Word2Vec.load(join(settings.get_emb_data_dir(self.dataset_name), '{}.emb'.format(self.dataset_name)))
         return self.model
 
     def project_embedding(self, tokens, idf=None):
@@ -50,8 +50,8 @@ class EmbeddingModel:
         :return: obtained weighted-average embedding
         """
         if self.model is None:
-            self.load(self.name)
-            print('{} embedding model loaded'.format(self.name))
+            self.load()
+            print('{} embedding model loaded'.format(self.dataset_name))
         vectors = []
         sum_weight = 0
         for token in tokens:

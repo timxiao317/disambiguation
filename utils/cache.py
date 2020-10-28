@@ -9,9 +9,9 @@ map_size = 68719476736
 
 class LMDBClient(object):
 
-    def __init__(self, name, readonly=False):
+    def __init__(self, dataset_name, name, readonly=False):
         # try:
-        lmdb_dir = join(settings.DATA_DIR, 'lmdb')
+        lmdb_dir = join(settings.get_data_dir(dataset_name), 'lmdb')
         os.makedirs(lmdb_dir, exist_ok=True)
         self.db = lmdb.open(join(lmdb_dir, name), map_size=map_size, readonly=readonly)
         # except Exception as e:

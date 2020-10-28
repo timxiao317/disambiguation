@@ -1,5 +1,7 @@
 from __future__ import division
 from __future__ import print_function
+
+import argparse
 import sys
 import os
 
@@ -148,13 +150,14 @@ def gae_for_na(name):
     return [tp, fp, fn], [prec, rec, f1], num_nodes, n_clusters
 
 
-def load_test_names():
-    return settings.TEST_NAME_LIST
+def load_test_names(dataset_name):
+    _, _, TEST_NAME_LIST = settings.get_split_name_list(dataset_name)
+    return TEST_NAME_LIST
 
 
-def main():
-    names = load_test_names()
-    wf = codecs.open(join(settings.OUT_DIR, 'local_clustering_results.csv'), 'w', encoding='utf-8')
+def main(dataset_name):
+    names = load_test_names(dataset_name)
+    wf = codecs.open(join(settings.get_out_dir(dataset_name), 'local_clustering_results.csv'), 'w', encoding='utf-8')
     wf.write('name,n_pubs,n_clusters,precision,recall,f1\n')
     metrics = np.zeros(3)
     cnt = 0
@@ -191,4 +194,8 @@ if __name__ == '__main__':
     # gae_for_na('hongbin_liang')
     # gae_for_na('j_yu')
     # gae_for_na('s_yu')
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--dataset_name", default="whoiswho_new", type=str)
+    args = parser.parse_args()
+    dataset_name = args.dataset_name
+    main(dataset_name)

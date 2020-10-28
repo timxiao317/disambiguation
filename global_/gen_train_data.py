@@ -1,3 +1,4 @@
+import argparse
 from os.path import join
 import sys
 import os
@@ -11,7 +12,7 @@ from utils import data_utils
 from utils import settings
 
 LMDB_NAME = "author_100.emb.weighted"
-lc = LMDBClient(LMDB_NAME)
+lc = LMDBClient(dataset_name, LMDB_NAME)
 start_time = datetime.now()
 
 """
@@ -31,33 +32,34 @@ class TripletsGenerator:
     n_triplets = 0
     batch_size = 100000
 
-    def __init__(self, train_scale=10000):
+    def __init__(self, dataset_name, train_scale=10000):
         self.prepare_data()
         self.save_size = train_scale
-        self.idf = data_utils.load_data(settings.FEATURE_DIR, 'feature_idf.pkl')
+        self.idf = data_utils.load_data(settings.get_feature_dir(dataset_name), 'feature_idf.pkl')
+        self.dataset_name = dataset_name
 
     def prepare_data(self):
         self.name2pubs_train = {}
         self.name2pubs_val = {}
         self.name2pubs_test = {}
-        for case_name in settings.TRAIN_NAME_LIST:
-            self.name2pubs_train[case_name] = data_utils.load_json(join(settings.RAW_DATA_DIR, case_name),
+        TRAIN_NAME_LIST, VAL_NAME_LIST, TEST_NAME_LIST = settings.get_split_name_list(self.dataset_name)
+        for case_name in TRAIN_NAME_LIST:
+            self.name2pubs_train[case_name] = data_utils.load_json(join(settings.get_raw_data_dir(self.dataset_name), case_name),
                                                                    "assignments.json")
-        for case_name in settings.VAL_NAME_LIST:
-            self.name2pubs_val[case_name] = data_utils.load_json(join(settings.RAW_DATA_DIR, case_name),
+        for case_name in VAL_NAME_LIST:
+            self.name2pubs_val[case_name] = data_utils.load_json(join(settings.get_raw_data_dir(self.dataset_name), case_name),
                                                                  "assignments.json")
-        for case_name in settings.TEST_NAME_LIST:
-            self.name2pubs_test[case_name] = data_utils.load_json(join(settings.RAW_DATA_DIR, case_name),
+        for case_name in TEST_NAME_LIST:
+            self.name2pubs_test[case_name] = data_utils.load_json(join(settings.get_raw_data_dir(self.dataset_name), case_name),
                                                                   "assignments.json")
-        # self.name2pubs_train = data_utils.load_json(settings.GLOBAL_DATA_DIR, 'name_to_pubs_train_500.json')  # for test            
-        # self.name2pubs_test = data_utils.load_json(settings.GLOBAL_DATA_DIR, 'name_to_pubs_test_100.json')
+        # self.name2pubs_train = data_utils.load_json(settings.get_global_data_dir(dataset_name), 'name_to_pubs_train_500.json')  # for test
+        # self.name2pubs_test = data_utils.load_json(settings.get_global_data_dir(dataset_name), 'name_to_pubs_test_100.json')
         # self.names_train = self.name2pubs_train.keys()
         # print('names train', len(self.names_train))
         # self.names_test = self.name2pubs_test.keys()
         # print('names test', len(self.names_test))
-        self.names_train = settings.TRAIN_NAME_LIST
-        self.names_val = settings.VAL_NAME_LIST
-        self.names_test = settings.TEST_NAME_LIST
+        self.names_train, self.names_val, self.names_test = settings.get_split_name_list(self.dataset_name)
+
         assert not set(self.names_train).intersection(set(self.names_test))
         assert not set(self.names_train).intersection(set(self.names_val))
         assert not set(self.names_val).intersection(set(self.names_test))
@@ -171,9 +173,9 @@ class TripletsGenerator:
     def dump_triplets(self, role='train'):
         triplets = self.gen_triplets_mp(role)
         if role == 'train':
-            out_dir = join(settings.OUT_DIR, 'triplets-{}'.format(self.save_size))
+            out_dir = join(settings.get_out_dir(self.dataset_name), 'triplets-{}'.format(self.save_size))
         else:
-            out_dir = join(settings.OUT_DIR, 'test-triplets')
+            out_dir = join(settings.get_out_dir(self.dataset_name), 'test-triplets')
         os.makedirs(out_dir, exist_ok=True)
         anchor_embs = []
         pos_embs = []
@@ -202,6 +204,10 @@ class TripletsGenerator:
 
 
 if __name__ == '__main__':
-    data_gen = TripletsGenerator(train_scale=1000000)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--dataset_name", default="whoiswho_new", type=str)
+    args = parser.parse_args()
+    dataset_name = args.dataset_name
+    data_gen = TripletsGenerator(dataset_name, train_scale=1000000)
     data_gen.dump_triplets(role='train')
     data_gen.dump_triplets(role='test')

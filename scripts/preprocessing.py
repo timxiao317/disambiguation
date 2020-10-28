@@ -1,3 +1,4 @@
+import argparse
 import sys
 import os
 
@@ -17,17 +18,17 @@ from utils import settings
 start_time = datetime.now()
 
 
-def dump_author_features_to_file():
+def dump_author_features_to_file(dataset_name):
     """
     generate author features by raw publication data and dump to files
     author features are defined by his/her paper attributes excluding the author's name
     """
     pubs_dict = {}
-    for dir_name in os.listdir(settings.RAW_DATA_DIR):
-        case_dir = join(settings.RAW_DATA_DIR, dir_name)
+    for dir_name in os.listdir(settings.get_raw_data_dir(dataset_name)):
+        case_dir = join(settings.get_raw_data_dir(dataset_name), dir_name)
         pubs_dict.update(data_utils.load_json(case_dir, 'pubs.json'))
     print('n_papers', len(pubs_dict))
-    wf = codecs.open(join(settings.GLOBAL_DATA_DIR, 'author_features.txt'), 'w', encoding='utf-8')
+    wf = codecs.open(join(settings.get_global_data_dir(dataset_name), 'author_features.txt'), 'w', encoding='utf-8')
     for i, pid in enumerate(pubs_dict):
         if i % 1000 == 0:
             print(i, datetime.now() - start_time)
@@ -46,13 +47,13 @@ def dump_author_features_to_file():
     wf.close()
 
 
-def dump_author_features_to_cache():
+def dump_author_features_to_cache(dataset_name):
     """
     dump author features to lmdb
     """
     LMDB_NAME = 'pub_authors.feature'
-    lc = LMDBClient(LMDB_NAME)
-    with codecs.open(join(settings.GLOBAL_DATA_DIR, 'author_features.txt'), 'r', encoding='utf-8') as rf:
+    lc = LMDBClient(dataset_name, LMDB_NAME)
+    with codecs.open(join(settings.get_global_data_dir(dataset_name), 'author_features.txt'), 'r', encoding='utf-8') as rf:
         for i, line in enumerate(rf):
             if i % 1000 == 0:
                 print('line', i)
@@ -66,11 +67,11 @@ def cal_feature_idf():
     """
     calculate word IDF (Inverse document frequency) using publication data
     """
-    feature_dir = settings.FEATURE_DIR
+    feature_dir = settings.get_feature_dir(dataset_name)
     counter = dd(int)
     cnt = 0
     LMDB_NAME = 'pub_authors.feature'
-    lc = LMDBClient(LMDB_NAME)
+    lc = LMDBClient(dataset_name, LMDB_NAME)
     author_cnt = 0
     with lc.db.begin() as txn:
         for k in txn.cursor():
@@ -93,7 +94,7 @@ def dump_author_embs():
     author embedding is calculated by weighted-average of word vectors with IDF
     """
     emb_model = EmbeddingModel.Instance()
-    idf = data_utils.load_data(settings.FEATURE_DIR, 'feature_idf.pkl')
+    idf = data_utils.load_data(settings.get_feature_dir(dataset_name), 'feature_idf.pkl')
     print('idf loaded')
     LMDB_NAME_FEATURE = 'pub_authors.feature'
     lc_feature = LMDBClient(LMDB_NAME_FEATURE)
@@ -116,8 +117,12 @@ if __name__ == '__main__':
     """
     some pre-processing
     """
-    dump_author_features_to_file()
-    dump_author_features_to_cache()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--dataset_name", default="whoiswho_new", type=str)
+    args = parser.parse_args()
+    dataset_name = args.dataset_name
+    dump_author_features_to_file(dataset_name)
+    dump_author_features_to_cache(dataset_name)
     emb_model = EmbeddingModel.Instance()
     emb_model.train('aminer')  # training word embedding model
     cal_feature_idf()

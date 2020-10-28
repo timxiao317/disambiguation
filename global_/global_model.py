@@ -1,3 +1,4 @@
+import argparse
 from os.path import join
 import sys
 import os
@@ -21,10 +22,11 @@ global metric learning model
 
 class GlobalTripletModel:
 
-    def __init__(self, data_scale):
+    def __init__(self, dataset_name, data_scale):
+        self.dataset_name = dataset_name
         self.data_scale = data_scale
-        self.train_triplets_dir = join(settings.OUT_DIR, 'triplets-{}'.format(self.data_scale))
-        self.test_triplets_dir = join(settings.OUT_DIR, 'test-triplets')
+        self.train_triplets_dir = join(settings.get_out_dir(dataset_name), 'triplets-{}'.format(self.data_scale))
+        self.test_triplets_dir = join(settings.get_out_dir(dataset_name), 'test-triplets')
         self.train_triplet_files_num = self.get_triplets_files_num(self.train_triplets_dir)
         self.test_triplet_files_num = self.get_triplets_files_num(self.test_triplets_dir)
         print('test file num', self.test_triplet_files_num)
@@ -105,7 +107,7 @@ class GlobalTripletModel:
         return model, inter_layer
 
     def load_triplets_model(self):
-        model_dir = join(settings.OUT_DIR, 'model')
+        model_dir = join(settings.get_out_dir(self.dataset_name), 'model')
         rf = open(join(model_dir, 'model-triplets-{}.json'.format(self.data_scale)), 'r')
         model_json = rf.read()
         rf.close()
@@ -125,7 +127,7 @@ class GlobalTripletModel:
         model.fit(X, np.ones((n_triplets, 2)), batch_size=64, epochs=5, shuffle=True, validation_split=0.2)
 
         model_json = model.to_json()
-        model_dir = join(settings.OUT_DIR, 'model')
+        model_dir = join(settings.get_out_dir(self.dataset_name), 'model')
         os.makedirs(model_dir, exist_ok=True)
         with open(join(model_dir, 'model-triplets-{}.json'.format(self.data_scale)), 'w') as wf:
             wf.write(model_json)
@@ -147,6 +149,10 @@ class GlobalTripletModel:
 
 
 if __name__ == '__main__':
-    global_model = GlobalTripletModel(data_scale=1000000)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--dataset_name", default="whoiswho_new", type=str)
+    args = parser.parse_args()
+    dataset_name = args.dataset_name
+    global_model = GlobalTripletModel(dataset_name, data_scale=1000000)
     global_model.train_triplets_model()
     print('done')

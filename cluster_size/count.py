@@ -1,3 +1,4 @@
+import argparse
 from os.path import join
 import numpy as np
 import keras.backend as K
@@ -8,10 +9,7 @@ from utils.cache import LMDBClient
 from utils import data_utils
 from utils import settings
 
-LMDB_NAME = "author_100.emb.weighted"
-lc = LMDBClient(LMDB_NAME)
 
-data_cache = {}
 
 
 def root_mean_squared_error(y_true, y_pred):
@@ -66,11 +64,12 @@ def gen_train(clusters, k=300, batch_size=1000, flatten=False):
         yield sampler(clusters, k, batch_size, flatten=flatten)
 
 
-def gen_test(k=300, flatten=False):
+def gen_test(dataset_name, k=300, flatten=False):
     name_to_pubs_test = {}
-    for case_name in settings.TEST_NAME_LIST:
-        name_to_pubs_test[case_name] = data_utils.load_json(join(settings.RAW_DATA_DIR, case_name), "assignments.json")
-    # name_to_pubs_test = data_utils.load_json(settings.GLOBAL_DATA_DIR, 'name_to_pubs_test_100.json')
+    _, _, TEST_NAME_LIST = settings.get_split_name_list(dataset_name)
+    for case_name in TEST_NAME_LIST:
+        name_to_pubs_test[case_name] = data_utils.load_json(join(settings.get_raw_data_dir(dataset_name), case_name), "assignments.json")
+    # name_to_pubs_test = data_utils.load_json(settings.get_global_data_dir(dataset_name), 'name_to_pubs_test_100.json')
     xs, ys = [], []
     names = []
     for name in name_to_pubs_test:
@@ -97,12 +96,13 @@ def gen_test(k=300, flatten=False):
     return names, xs, ys
 
 
-def run_rnn(k=300, seed=1106):
+def run_rnn(dataset_name, k=300, seed=1106):
     name_to_pubs_train = {}
-    for case_name in settings.TRAIN_NAME_LIST:
-        name_to_pubs_train[case_name] = data_utils.load_json(join(settings.RAW_DATA_DIR, case_name), "assignments.json")
-    # name_to_pubs_train = data_utils.load_json(settings.GLOBAL_DATA_DIR, 'name_to_pubs_train_500.json')
-    test_names, test_x, test_y = gen_test(k)
+    TRAIN_NAME_LIST, _, _ = settings.get_split_name_list(dataset_name)
+    for case_name in TRAIN_NAME_LIST:
+        name_to_pubs_train[case_name] = data_utils.load_json(join(settings.get_raw_data_dir(dataset_name), case_name), "assignments.json")
+    # name_to_pubs_train = data_utils.load_json(settings.get_global_data_dir(dataset_name), 'name_to_pubs_train_500.json')
+    test_names, test_x, test_y = gen_test(dataset_name, k)
     np.random.seed(seed)
     clusters = []
     for domain in name_to_pubs_train.values():
@@ -118,11 +118,19 @@ def run_rnn(k=300, seed=1106):
     model.fit_generator(gen_train(clusters, k=300, batch_size=1000), steps_per_epoch=100, epochs=1000,
                         validation_data=(test_x, test_y))
     kk = model.predict(test_x)
-    wf = open(join(settings.OUT_DIR, 'n_clusters_rnn.txt'), 'w')
+    wf = open(join(settings.get_out_dir(dataset_name), 'n_clusters_rnn.txt'), 'w')
     for i, name in enumerate(test_names):
         wf.write('{}\t{}\t{}\n'.format(name, test_y[i], kk[i][0]))
     wf.close()
 
 
 if __name__ == '__main__':
-    run_rnn()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--dataset_name", default="whoiswho_new", type=str)
+    args = parser.parse_args()
+    dataset_name = args.dataset_name
+    LMDB_NAME = "author_100.emb.weighted"
+    lc = LMDBClient(dataset_name, LMDB_NAME)
+
+    data_cache = {}
+    run_rnn(dataset_name)
