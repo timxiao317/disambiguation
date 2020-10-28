@@ -124,7 +124,7 @@ if __name__ == '__main__':
     dump_author_features_to_file(dataset_name)
     dump_author_features_to_cache(dataset_name)
     emb_model = EmbeddingModel.Instance()
-    emb_model.train('aminer')  # training word embedding model
+    emb_model.train()  # training word embedding model
     cal_feature_idf()
     dump_author_embs()
     print('done', datetime.now() - start_time)

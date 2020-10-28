@@ -19,7 +19,7 @@ class EmbeddingModel:
         self.model = None
         self.dataset_name = dataset_name
 
-    def train(self, wf_name, size=EMB_DIM):
+    def train(self, size=EMB_DIM):
         data = []
         LMDB_NAME = 'pub_authors.feature'
         lc = LMDBClient(self.dataset_name, LMDB_NAME)
@@ -36,7 +36,7 @@ class EmbeddingModel:
         self.model = Word2Vec(
             data, size=size, window=5, min_count=5, workers=20,
         )
-        self.model.save(join(settings.get_emb_data_dir(self.dataset_name), '{}.emb'.format(wf_name)))
+        self.model.save(join(settings.get_emb_data_dir(self.dataset_name), '{}.emb'.format(self.dataset_name)))
 
     def load(self):
         self.model = Word2Vec.load(join(settings.get_emb_data_dir(self.dataset_name), '{}.emb'.format(self.dataset_name)))
@@ -73,7 +73,6 @@ class EmbeddingModel:
 
 
 if __name__ == '__main__':
-    wf_name = 'aminer'
     emb_model = EmbeddingModel.Instance()
-    emb_model.train(wf_name)
+    emb_model.train()
     print('loaded')
