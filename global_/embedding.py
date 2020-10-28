@@ -15,7 +15,7 @@ EMB_DIM = 100
 @Singleton
 class EmbeddingModel:
 
-    def __init__(self, dataset_name="aminer"):
+    def __init__(self, dataset_name):
         self.model = None
         self.dataset_name = dataset_name
 
