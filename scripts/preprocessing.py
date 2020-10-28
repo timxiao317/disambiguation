@@ -39,6 +39,8 @@ def dump_author_features_to_file(dataset_name):
             print(i, pid, len(paper["authors"]))
         if len(paper["authors"]) > 100:
             continue
+        if len(paper["authors"]) == 1:
+            continue
         n_authors = len(paper.get('authors', []))
         for j in range(n_authors):
             author_feature = feature_utils.extract_author_features(paper, j)
