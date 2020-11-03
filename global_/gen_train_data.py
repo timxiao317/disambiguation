@@ -38,15 +38,15 @@ class TripletsGenerator:
 
     def prepare_data(self):
         self.name2pubs_train = {}
-        self.name2pubs_val = {}
+        # self.name2pubs_val = {}
         self.name2pubs_test = {}
-        TRAIN_NAME_LIST, VAL_NAME_LIST, TEST_NAME_LIST = settings.get_split_name_list(self.dataset_name)
+        TRAIN_NAME_LIST, TEST_NAME_LIST = settings.get_split_name_list(self.dataset_name)
         for case_name in TRAIN_NAME_LIST:
             self.name2pubs_train[case_name] = data_utils.load_json(join(settings.get_raw_data_dir(self.dataset_name), case_name),
                                                                    "assignments.json")
-        for case_name in VAL_NAME_LIST:
-            self.name2pubs_val[case_name] = data_utils.load_json(join(settings.get_raw_data_dir(self.dataset_name), case_name),
-                                                                 "assignments.json")
+        # for case_name in VAL_NAME_LIST:
+        #     self.name2pubs_val[case_name] = data_utils.load_json(join(settings.get_raw_data_dir(self.dataset_name), case_name),
+        #                                                          "assignments.json")
         for case_name in TEST_NAME_LIST:
             self.name2pubs_test[case_name] = data_utils.load_json(join(settings.get_raw_data_dir(self.dataset_name), case_name),
                                                                   "assignments.json")
@@ -56,11 +56,11 @@ class TripletsGenerator:
         # print('names train', len(self.names_train))
         # self.names_test = self.name2pubs_test.keys()
         # print('names test', len(self.names_test))
-        self.names_train, self.names_val, self.names_test = settings.get_split_name_list(self.dataset_name)
+        self.names_train, self.names_test = settings.get_split_name_list(self.dataset_name)
 
         assert not set(self.names_train).intersection(set(self.names_test))
-        assert not set(self.names_train).intersection(set(self.names_val))
-        assert not set(self.names_val).intersection(set(self.names_test))
+        # assert not set(self.names_train).intersection(set(self.names_val))
+        # assert not set(self.names_val).intersection(set(self.names_test))
 
         for name in self.names_train:
             name_pubs_dict = self.name2pubs_train[name]

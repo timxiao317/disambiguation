@@ -45,5 +45,5 @@ def get_feature_dir(DATA_SET_NAME):
     return FEATURE_DIR
 def get_split_name_list(DATA_SET_NAME):
     with open(join(SPLIT_PATH, DATA_SET_NAME), 'rb') as load:
-        _, TRAIN_NAME_LIST, VAL_NAME_LIST, TEST_NAME_LIST = pickle.load(load)
-    return TRAIN_NAME_LIST, VAL_NAME_LIST, TEST_NAME_LIST
+        _, TRAIN_NAME_LIST, TEST_NAME_LIST = pickle.load(load)
+    return TRAIN_NAME_LIST, TEST_NAME_LIST
