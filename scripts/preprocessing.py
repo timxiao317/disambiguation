@@ -60,7 +60,7 @@ def dump_author_features_to_cache(dataset_name):
             items = line.rstrip().split('\t')
             # print(line)
             pid_order = items[0]
-            if items[1]:
+            if len(items) > 1:
                 author_features = items[1].split()
             else:
                 author_features = []
