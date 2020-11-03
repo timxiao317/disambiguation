@@ -58,6 +58,7 @@ def dump_author_features_to_cache(dataset_name):
             if i % 1000 == 0:
                 print('line', i)
             items = line.rstrip().split('\t')
+            print(line)
             pid_order = items[0]
             author_features = items[1].split()
             lc.set(pid_order, author_features)
