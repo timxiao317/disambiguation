@@ -153,7 +153,7 @@ def gae_for_na(name):
 
 
 def load_test_names(dataset_name):
-    _, _, TEST_NAME_LIST = settings.get_split_name_list(dataset_name)
+    _, TEST_NAME_LIST = settings.get_split_name_list(dataset_name)
     return TEST_NAME_LIST
 
 

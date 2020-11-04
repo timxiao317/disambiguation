@@ -66,7 +66,7 @@ def gen_train(clusters, k=300, batch_size=1000, flatten=False):
 
 def gen_test(dataset_name, k=300, flatten=False):
     name_to_pubs_test = {}
-    _, _, TEST_NAME_LIST = settings.get_split_name_list(dataset_name)
+    _, TEST_NAME_LIST = settings.get_split_name_list(dataset_name)
     for case_name in TEST_NAME_LIST:
         name_to_pubs_test[case_name] = data_utils.load_json(join(settings.get_raw_data_dir(dataset_name), case_name), "assignments.json")
     # name_to_pubs_test = data_utils.load_json(settings.get_global_data_dir(dataset_name), 'name_to_pubs_test_100.json')

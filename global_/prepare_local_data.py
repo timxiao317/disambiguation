@@ -29,7 +29,7 @@ def dump_inter_emb(train_dataset_name, test_dataset_name):
     global_model = GlobalTripletModel(train_dataset_name, data_scale=1000000)
     trained_global_model = global_model.load_triplets_model()
     name_to_pubs_test = {}
-    _, _, TEST_NAME_LIST = settings.get_split_name_list(test_dataset_name)
+    _, TEST_NAME_LIST = settings.get_split_name_list(test_dataset_name)
     for case_name in TEST_NAME_LIST:
         name_to_pubs_test[case_name] = data_utils.load_json(join(settings.get_raw_data_dir(test_dataset_name), case_name), "assignments.json")
     # name_to_pubs_test = data_utils.load_json(settings.get_global_data_dir(dataset_name), 'name_to_pubs_test_100.json')
@@ -59,7 +59,7 @@ def gen_local_data(idf_threshold=10):
     :param idf_threshold: threshold for determining whether there exists an edge between two papers (for this demo we set 29)
     """
     name_to_pubs_test = {}
-    _, _, TEST_NAME_LIST = settings.get_split_name_list(test_dataset_name)
+    _, TEST_NAME_LIST = settings.get_split_name_list(test_dataset_name)
     for case_name in TEST_NAME_LIST:
         name_to_pubs_test[case_name] = data_utils.load_json(join(settings.get_raw_data_dir(test_dataset_name), case_name), "assignments.json")
     # name_to_pubs_test = data_utils.load_json(settings.get_global_data_dir(dataset_name), 'name_to_pubs_test_100.json')
