@@ -18,14 +18,14 @@ IDF_THRESHOLD = 32  # small data
 # IDF_THRESHOLD = 10
 
 
-def dump_inter_emb(train_dataset_name, test_dataset_name):
+def dump_inter_emb():
     """
     dump hidden embedding via trained global model for local model to use
     """
     LMDB_NAME = "author_100.emb.weighted"
     lc_input = LMDBClient(test_dataset_name, LMDB_NAME)
     INTER_LMDB_NAME = 'author_triplets.emb'
-    lc_inter = LMDBClient(test_dataset_name, INTER_LMDB_NAME)
+    lc_inter = LMDBClient(exp_name, INTER_LMDB_NAME)
     global_model = GlobalTripletModel(train_dataset_name, data_scale=1000000)
     trained_global_model = global_model.load_triplets_model()
     name_to_pubs_test = {}
@@ -63,12 +63,12 @@ def gen_local_data(idf_threshold=10):
     for case_name in TEST_NAME_LIST:
         name_to_pubs_test[case_name] = data_utils.load_json(join(settings.get_raw_data_dir(test_dataset_name), case_name), "assignments.json")
     # name_to_pubs_test = data_utils.load_json(settings.get_global_data_dir(dataset_name), 'name_to_pubs_test_100.json')
-    idf = data_utils.load_data(settings.get_feature_dir(test_dataset_name), 'feature_idf.pkl')
+    idf = data_utils.load_data(settings.get_feature_dir(train_dataset_name), 'feature_idf.pkl')
     INTER_LMDB_NAME = 'author_triplets.emb'
-    lc_inter = LMDBClient(test_dataset_name, INTER_LMDB_NAME)
+    lc_inter = LMDBClient(exp_name, INTER_LMDB_NAME)
     LMDB_AUTHOR_FEATURE = "pub_authors.feature"
     lc_feature = LMDBClient(test_dataset_name, LMDB_AUTHOR_FEATURE)
-    graph_dir = join(settings.get_data_dir(test_dataset_name), 'local', 'graph-{}'.format(idf_threshold))
+    graph_dir = join(settings.get_data_dir(exp_name), 'local', 'graph-{}'.format(idf_threshold))
     os.makedirs(graph_dir, exist_ok=True)
     for i, name in enumerate(name_to_pubs_test):
         print(i, name)
@@ -125,7 +125,8 @@ if __name__ == '__main__':
     args = parser.parse_args()
     train_dataset_name = args.train_dataset_name
     test_dataset_name = args.test_dataset_name
+    exp_name = "{}_{}".format(train_dataset_name, test_dataset_name)
 
-    dump_inter_emb(train_dataset_name, test_dataset_name)
+    dump_inter_emb()
     gen_local_data(idf_threshold=IDF_THRESHOLD)
     print('done')
