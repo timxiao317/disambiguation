@@ -18,20 +18,20 @@ IDF_THRESHOLD = 32  # small data
 # IDF_THRESHOLD = 10
 
 
-def dump_inter_emb(dataset_name):
+def dump_inter_emb(train_dataset_name, test_dataset_name):
     """
     dump hidden embedding via trained global model for local model to use
     """
     LMDB_NAME = "author_100.emb.weighted"
-    lc_input = LMDBClient(dataset_name, LMDB_NAME)
+    lc_input = LMDBClient(test_dataset_name, LMDB_NAME)
     INTER_LMDB_NAME = 'author_triplets.emb'
-    lc_inter = LMDBClient(dataset_name, INTER_LMDB_NAME)
-    global_model = GlobalTripletModel(dataset_name, data_scale=1000000)
+    lc_inter = LMDBClient(test_dataset_name, INTER_LMDB_NAME)
+    global_model = GlobalTripletModel(train_dataset_name, data_scale=1000000)
     trained_global_model = global_model.load_triplets_model()
     name_to_pubs_test = {}
-    _, _, TEST_NAME_LIST = settings.get_split_name_list(dataset_name)
+    _, _, TEST_NAME_LIST = settings.get_split_name_list(test_dataset_name)
     for case_name in TEST_NAME_LIST:
-        name_to_pubs_test[case_name] = data_utils.load_json(join(settings.get_raw_data_dir(dataset_name), case_name), "assignments.json")
+        name_to_pubs_test[case_name] = data_utils.load_json(join(settings.get_raw_data_dir(test_dataset_name), case_name), "assignments.json")
     # name_to_pubs_test = data_utils.load_json(settings.get_global_data_dir(dataset_name), 'name_to_pubs_test_100.json')
     for name in name_to_pubs_test:
         print('name', name)
@@ -59,16 +59,16 @@ def gen_local_data(idf_threshold=10):
     :param idf_threshold: threshold for determining whether there exists an edge between two papers (for this demo we set 29)
     """
     name_to_pubs_test = {}
-    _, _, TEST_NAME_LIST = settings.get_split_name_list(dataset_name)
+    _, _, TEST_NAME_LIST = settings.get_split_name_list(test_dataset_name)
     for case_name in TEST_NAME_LIST:
-        name_to_pubs_test[case_name] = data_utils.load_json(join(settings.get_raw_data_dir(dataset_name), case_name), "assignments.json")
+        name_to_pubs_test[case_name] = data_utils.load_json(join(settings.get_raw_data_dir(test_dataset_name), case_name), "assignments.json")
     # name_to_pubs_test = data_utils.load_json(settings.get_global_data_dir(dataset_name), 'name_to_pubs_test_100.json')
-    idf = data_utils.load_data(settings.get_feature_dir(dataset_name), 'feature_idf.pkl')
+    idf = data_utils.load_data(settings.get_feature_dir(test_dataset_name), 'feature_idf.pkl')
     INTER_LMDB_NAME = 'author_triplets.emb'
-    lc_inter = LMDBClient(dataset_name, INTER_LMDB_NAME)
+    lc_inter = LMDBClient(test_dataset_name, INTER_LMDB_NAME)
     LMDB_AUTHOR_FEATURE = "pub_authors.feature"
-    lc_feature = LMDBClient(dataset_name, LMDB_AUTHOR_FEATURE)
-    graph_dir = join(settings.get_data_dir(dataset_name), 'local', 'graph-{}'.format(idf_threshold))
+    lc_feature = LMDBClient(test_dataset_name, LMDB_AUTHOR_FEATURE)
+    graph_dir = join(settings.get_data_dir(test_dataset_name), 'local', 'graph-{}'.format(idf_threshold))
     os.makedirs(graph_dir, exist_ok=True)
     for i, name in enumerate(name_to_pubs_test):
         print(i, name)
@@ -120,9 +120,12 @@ def gen_local_data(idf_threshold=10):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dataset_name", default="whoiswho_new", type=str)
+    parser.add_argument("--test_dataset_name", default="whoiswho_new", type=str)
+    parser.add_argument("--train_dataset_name", default="whoiswho_new", type=str)
     args = parser.parse_args()
-    dataset_name = args.dataset_name
-    dump_inter_emb(dataset_name)
+    train_dataset_name = args.train_dataset_name
+    test_dataset_name = args.test_dataset_name
+
+    dump_inter_emb(train_dataset_name, test_dataset_name)
     gen_local_data(idf_threshold=IDF_THRESHOLD)
     print('done')
