@@ -39,7 +39,8 @@ flags.DEFINE_float('dropout', 0., 'Dropout rate (1 - keep probability).')
 
 flags.DEFINE_string('model', 'gcn_vae', 'Model string.')
 flags.DEFINE_string('name', 'hui_fang', 'Dataset string.')
-flags.DEFINE_string('dataset_name', "whoiswho_new", "")
+flags.DEFINE_string('train_dataset_name', "whoiswho_new", "")
+flags.DEFINE_string('test_dataset_name', "whoiswho_new", "")
 
 # flags.DEFINE_integer('features', 1, 'Whether to use features (1) or not (0).')
 flags.DEFINE_integer('is_sparse', 0, 'Whether input features are sparse.')
@@ -55,7 +56,7 @@ def gae_for_na(name):
     :param name:  author name
     :return: evaluation results
     """
-    adj, features, labels = load_local_data(dataset_name, name=name)
+    adj, features, labels = load_local_data(exp_name, name=name)
 
     # Store original adjacency matrix (without diagonal entries) for later
     adj_orig = adj
@@ -157,9 +158,9 @@ def load_test_names(dataset_name):
     return TEST_NAME_LIST
 
 
-def main(dataset_name):
-    names = load_test_names(dataset_name)
-    wf = codecs.open(join(settings.get_out_dir(dataset_name), 'local_clustering_results.csv'), 'w', encoding='utf-8')
+def main():
+    names = load_test_names(test_dataset_name)
+    wf = codecs.open(join(settings.get_out_dir(exp_name), 'local_clustering_results.csv'), 'w', encoding='utf-8')
     wf.write('name,n_pubs,n_clusters,precision,recall,f1\n')
     metrics = np.zeros(3)
     cnt = 0
@@ -199,5 +200,7 @@ if __name__ == '__main__':
     # parser = argparse.ArgumentParser()
     # parser.add_argument("--dataset_name", default="whoiswho_new", type=str)
     # args = parser.parse_args()
-    dataset_name = FLAGS.dataset_name
-    main(dataset_name)
+    train_dataset_name = FLAGS.train_dataset_name
+    test_dataset_name = FLAGS.test_dataset_name
+    exp_name = "{}_{}".format(train_dataset_name, test_dataset_name)
+    main()
