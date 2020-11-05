@@ -27,6 +27,7 @@ def load_local_data(dataset_name, name='cheng_cheng'):
     edges_unordered = np.genfromtxt(join(path, "{}_pubs_network.txt".format(name)), dtype=np.dtype(str))
     edges = np.array(list(map(idx_map.get, edges_unordered.flatten())),
                      dtype=np.int32).reshape(edges_unordered.shape)
+    print(edges)
     adj = sp.coo_matrix((np.ones(edges.shape[0]), (edges[:, 0], edges[:, 1])),
                         shape=(features.shape[0], features.shape[0]), dtype=np.float32)
 
