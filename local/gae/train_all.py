@@ -166,21 +166,24 @@ def main():
     cnt = 0
     tp_fp_fn_sum = np.zeros(3)
     for name in names:
-        tp_fp_fn, cur_metric, num_nodes, n_clusters = gae_for_na(name)
+        try:
+            tp_fp_fn, cur_metric, num_nodes, n_clusters = gae_for_na(name)
 
-        wf.write('{0},{1},{2},{3:.5f},{4:.5f},{5:.5f},{6:.5f},{7:.5f},{8:.5f},\n'.format(
-            name, num_nodes, n_clusters, cur_metric[0], cur_metric[1], cur_metric[2], *tp_fp_fn))
-        wf.flush()
-        for i, m in enumerate(cur_metric):
-            metrics[i] += m
-        cnt += 1
-        tp_fp_fn_sum += np.array(tp_fp_fn)
-        macro_prec = metrics[0] / cnt
-        macro_rec = metrics[1] / cnt
-        macro_f1 = cal_f1(macro_prec, macro_rec)
-        print('average until now', [macro_prec, macro_rec, macro_f1])
-        time_acc = time.time() - start_time
-        print(cnt, 'names', time_acc, 'avg time', time_acc / cnt)
+            wf.write('{0},{1},{2},{3:.5f},{4:.5f},{5:.5f},{6:.5f},{7:.5f},{8:.5f},\n'.format(
+                name, num_nodes, n_clusters, cur_metric[0], cur_metric[1], cur_metric[2], *tp_fp_fn))
+            wf.flush()
+            for i, m in enumerate(cur_metric):
+                metrics[i] += m
+            cnt += 1
+            tp_fp_fn_sum += np.array(tp_fp_fn)
+            macro_prec = metrics[0] / cnt
+            macro_rec = metrics[1] / cnt
+            macro_f1 = cal_f1(macro_prec, macro_rec)
+            print('average until now', [macro_prec, macro_rec, macro_f1])
+            time_acc = time.time() - start_time
+            print(cnt, 'names', time_acc, 'avg time', time_acc / cnt)
+        except:
+            continue
     macro_prec = metrics[0] / cnt
     macro_rec = metrics[1] / cnt
     macro_f1 = cal_f1(macro_prec, macro_rec)
