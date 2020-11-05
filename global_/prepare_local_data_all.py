@@ -29,18 +29,17 @@ def dump_inter_emb():
     global_model = GlobalTripletModel(train_dataset_name, data_scale=1000000)
     trained_global_model = global_model.load_triplets_model()
     name_to_pubs_test = {}
-    _, TEST_NAME_LIST = settings.get_split_name_list(test_dataset_name)
-    for case_name in TEST_NAME_LIST:
+    TRAIN_NAME_LIST, TEST_NAME_LIST = settings.get_split_name_list(test_dataset_name)
+    for case_name in TRAIN_NAME_LIST + TEST_NAME_LIST:
         name_to_pubs_test[case_name] = data_utils.load_json(join(settings.get_raw_data_dir(test_dataset_name), case_name), "assignments.json")
     # name_to_pubs_test = data_utils.load_json(settings.get_global_data_dir(dataset_name), 'name_to_pubs_test_100.json')
     for name in name_to_pubs_test:
         print('name', name)
         name_data = name_to_pubs_test[name]
-        print(name_data)
         embs_input = []
         pids = []
         for i, aid in enumerate(name_data.keys()):
-            if len(name_data[aid]) < 5:  # n_pubs of current author is too small
+            if len(name_data[aid]) < 1:  # n_pubs of current author is too small
                 continue
             for pid in name_data[aid]:
                 cur_emb = lc_input.get(pid)
@@ -60,8 +59,8 @@ def gen_local_data(idf_threshold=10):
     :param idf_threshold: threshold for determining whether there exists an edge between two papers (for this demo we set 29)
     """
     name_to_pubs_test = {}
-    _, TEST_NAME_LIST = settings.get_split_name_list(test_dataset_name)
-    for case_name in TEST_NAME_LIST:
+    TRAIN_NAME_LIST, TEST_NAME_LIST = settings.get_split_name_list(test_dataset_name)
+    for case_name in TRAIN_NAME_LIST + TEST_NAME_LIST:
         name_to_pubs_test[case_name] = data_utils.load_json(join(settings.get_raw_data_dir(test_dataset_name), case_name), "assignments.json")
     # name_to_pubs_test = data_utils.load_json(settings.get_global_data_dir(dataset_name), 'name_to_pubs_test_100.json')
     idf = data_utils.load_data(settings.get_feature_dir(train_dataset_name), 'feature_idf.pkl')
@@ -82,7 +81,7 @@ def gen_local_data(idf_threshold=10):
         wf_content = open(join(graph_dir, '{}_pubs_content.txt'.format(name)), 'w')
         for i, aid in enumerate(cur_person_dict):
             items = cur_person_dict[aid]
-            if len(items) < 5:
+            if len(items) < 1:
                 continue
             for pid in items:
                 pids2label[pid] = aid

@@ -81,8 +81,8 @@ def gen_local_data(idf_threshold=10):
         wf_content = open(join(graph_dir, '{}_pubs_content.txt'.format(name)), 'w')
         for i, aid in enumerate(cur_person_dict):
             items = cur_person_dict[aid]
-            # if len(items) < 5:
-            #     continue
+            if len(items) < 1:
+                continue
             for pid in items:
                 pids2label[pid] = aid
                 pids.append(pid)
