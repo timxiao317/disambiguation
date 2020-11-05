@@ -82,7 +82,6 @@ def gen_local_data(idf_threshold=10):
         for i, aid in enumerate(cur_person_dict):
             items = cur_person_dict[aid]
             if len(items) < 1:
-                print(items)
                 continue
             for pid in items:
                 pids2label[pid] = aid
@@ -96,6 +95,7 @@ def gen_local_data(idf_threshold=10):
                 wf_content.write('{}\t'.format(pid))
                 wf_content.write('\t'.join(cur_pub_emb))
                 wf_content.write('\t{}\n'.format(pids2label[pid]))
+                print(pids2label[pid])
         wf_content.close()
 
         # generate network
