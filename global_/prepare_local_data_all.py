@@ -87,6 +87,7 @@ def gen_local_data(idf_threshold=10):
                 pids2label[pid] = aid
                 pids.append(pid)
         shuffle(pids)
+        print(pids)
         for pid in pids:
             cur_pub_emb = lc_inter.get(pid)
             if cur_pub_emb is not None:
