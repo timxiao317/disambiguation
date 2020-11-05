@@ -18,6 +18,7 @@ def load_local_data(dataset_name, name='cheng_cheng'):
     print('Loading {} dataset...'.format(name), 'path=', path)
 
     idx_features_labels = np.genfromtxt(join(path, "{}_pubs_content.txt".format(name)), dtype=np.dtype(str))
+    print(idx_features_labels)
     features = np.array(idx_features_labels[:, 1:-1], dtype=np.float32)  # sparse?
     labels = encode_labels(idx_features_labels[:, -1])
 
