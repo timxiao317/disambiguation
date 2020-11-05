@@ -27,12 +27,8 @@ def load_local_data(dataset_name, name='cheng_cheng'):
     edges_unordered = np.genfromtxt(join(path, "{}_pubs_network.txt".format(name)), dtype=np.dtype(str))
     edges = np.array(list(map(idx_map.get, edges_unordered.flatten())),
                      dtype=np.int32).reshape(edges_unordered.shape)
-    if edges.shape[0] > 0:
-        adj = sp.coo_matrix((np.ones(edges.shape[0]), (edges[:, 0], edges[:, 1])),
-                            shape=(features.shape[0], features.shape[0]), dtype=np.float32)
-    else:
-        adj = sp.coo_matrix(np.zeros((features.shape[0], features.shape[0]), dtype=np.float32))
-
+    adj = sp.coo_matrix((np.ones(edges.shape[0]), (edges[:, 0], edges[:, 1])),
+                        shape=(features.shape[0], features.shape[0]), dtype=np.float32)
     # build symmetric adjacency matrix
     adj = adj + adj.T.multiply(adj.T > adj) - adj.multiply(adj.T > adj)
 
