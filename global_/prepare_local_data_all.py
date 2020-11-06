@@ -63,7 +63,7 @@ def gen_local_data(idf_threshold=10):
     for case_name in TRAIN_NAME_LIST + TEST_NAME_LIST:
         name_to_pubs_test[case_name] = data_utils.load_json(join(settings.get_raw_data_dir(test_dataset_name), case_name), "assignments.json")
     # name_to_pubs_test = data_utils.load_json(settings.get_global_data_dir(dataset_name), 'name_to_pubs_test_100.json')
-    idf = data_utils.load_data(settings.get_feature_dir(train_dataset_name), 'feature_idf.pkl')
+    idf = data_utils.load_data(settings.get_overall_feature_dir(), 'feature_idf.pkl')
     INTER_LMDB_NAME = 'author_triplets.emb'
     lc_inter = LMDBClient(exp_name, INTER_LMDB_NAME)
     LMDB_AUTHOR_FEATURE = "pub_authors.feature"
