@@ -53,7 +53,7 @@ def dump_inter_emb():
             lc_inter.set(pid_, inter_embs[i])
 
 
-def gen_local_data(idf_threshold=10):
+def gen_local_data(idf_threshold=5):
     """
     generate local data (including paper features and paper network) for each associated name
     :param idf_threshold: threshold for determining whether there exists an edge between two papers (for this demo we set 29)
