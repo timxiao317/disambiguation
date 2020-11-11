@@ -12,10 +12,8 @@ from utils.cache import LMDBClient
 from utils import data_utils
 from utils import settings
 
-IDF_THRESHOLD = 32  # small data
-
-
-# IDF_THRESHOLD = 10
+# IDF_THRESHOLD = 32  # small data
+IDF_THRESHOLD = 10
 
 
 def dump_inter_emb():
@@ -53,7 +51,7 @@ def dump_inter_emb():
             lc_inter.set(pid_, inter_embs[i])
 
 
-def gen_local_data(idf_threshold=10):
+def gen_local_data(idf_threshold):
     """
     generate local data (including paper features and paper network) for each associated name
     :param idf_threshold: threshold for determining whether there exists an edge between two papers (for this demo we set 29)
