@@ -16,6 +16,7 @@ def load_local_data(dataset_name, name='cheng_cheng'):
     path = join(settings.get_data_dir(dataset_name), 'local', 'graph-{}'.format(IDF_THRESHOLD))
     # Load local paper network dataset
     print('Loading {} dataset...'.format(name), 'path=', path)
+    print(path)
 
     idx_features_labels = np.genfromtxt(join(path, "{}_pubs_content.txt".format(name)), comments="~~~~~~", dtype=np.dtype(str))
     features = np.array(idx_features_labels[:, 1:-1], dtype=np.float32)  # sparse?
