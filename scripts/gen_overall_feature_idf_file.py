@@ -33,4 +33,4 @@ for dataset_name in dataset_names:
 idf = {}
 for k in counter:
     idf[k] = math.log(cnt / counter[k])
-data_utils.dump_data(dict(idf), overall_feature_dir, "feature_idf.pkl")
+data_utils.dump_data(dict(idf), settings.get_overall_feature_dir(), "feature_idf.pkl")
