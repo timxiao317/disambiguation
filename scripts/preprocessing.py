@@ -98,7 +98,7 @@ def dump_author_embs():
     author embedding is calculated by weighted-average of word vectors with IDF
     """
     emb_model = EmbeddingModel.Instance()
-    idf = data_utils.load_data(settings.get_overall_feature_dir(), 'feature_idf.pkl')
+    idf = data_utils.load_data(settings.get_feature_dir(dataset_name), 'feature_idf.pkl')
     # idf = data_utils.load_data(settings.get_feature_dir(dataset_name), 'feature_idf.pkl')
     print('idf loaded')
     LMDB_NAME_FEATURE = 'pub_authors.feature'
