@@ -13,7 +13,7 @@ from utils import data_utils
 from utils import settings
 
 # IDF_THRESHOLD = 32  # small data
-IDF_THRESHOLD = 3
+IDF_THRESHOLD = 10
 
 
 def dump_inter_emb():
