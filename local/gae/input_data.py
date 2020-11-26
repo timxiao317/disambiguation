@@ -2,7 +2,6 @@ from os.path import join
 import numpy as np
 import scipy.sparse as sp
 from utils import settings
-from global_.prepare_local_data import IDF_THRESHOLD
 
 
 
@@ -12,7 +11,7 @@ def encode_labels(labels):
     return list(map(lambda x: classes_dict[x], labels))
 
 
-def load_local_data(dataset_name, name='cheng_cheng'):
+def load_local_data(dataset_name, IDF_THRESHOLD, name='cheng_cheng'):
     path = join(settings.get_data_dir(dataset_name), 'local', 'graph-{}'.format(IDF_THRESHOLD))
     # Load local paper network dataset
     print('Loading {} dataset...'.format(name), 'path=', path)

@@ -12,7 +12,7 @@ from utils.cache import LMDBClient
 from utils import data_utils
 from utils import settings
 
-IDF_THRESHOLD = 32  # small data
+# IDF_THRESHOLD = 32  # small data
 # IDF_THRESHOLD = 10
 
 
@@ -120,10 +120,12 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--test_dataset_name", default="whoiswho_new", type=str)
     parser.add_argument("--train_dataset_name", default="whoiswho_new", type=str)
+    parser.add_argument("--idf_threshold")
     args = parser.parse_args()
     train_dataset_name = args.train_dataset_name
     test_dataset_name = args.test_dataset_name
-    exp_name = "{}_{}".format(train_dataset_name, test_dataset_name)
+    IDF_THRESHOLD = args.idf_threshold
+    exp_name = "{}_{}_{}".format(train_dataset_name, test_dataset_name, IDF_THRESHOLD)
 
     dump_inter_emb()
     gen_local_data(idf_threshold=IDF_THRESHOLD)
