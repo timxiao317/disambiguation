@@ -41,7 +41,7 @@ flags.DEFINE_string('model', 'gcn_vae', 'Model string.')
 flags.DEFINE_string('name', 'hui_fang', 'Dataset string.')
 flags.DEFINE_string('train_dataset_name', "whoiswho_new", "")
 flags.DEFINE_string('test_dataset_name', "whoiswho_new", "")
-flags.DEFINE_float('idf_threshold', 0.)
+flags.DEFINE_float('idf_threshold', 0., "")
 # flags.DEFINE_integer('features', 1, 'Whether to use features (1) or not (0).')
 flags.DEFINE_integer('is_sparse', 0, 'Whether input features are sparse.')
 
