@@ -120,7 +120,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--test_dataset_name", default="whoiswho_new", type=str)
     parser.add_argument("--train_dataset_name", default="whoiswho_new", type=str)
-    parser.add_argument("--idf_threshold")
+    parser.add_argument("--idf_threshold", type=float)
     args = parser.parse_args()
     train_dataset_name = args.train_dataset_name
     test_dataset_name = args.test_dataset_name
