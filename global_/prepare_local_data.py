@@ -1,6 +1,4 @@
-import argparse
 from os.path import join
-import sys
 import os
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -37,7 +35,7 @@ def dump_inter_emb():
         embs_input = []
         pids = []
         for i, aid in enumerate(name_data.keys()):
-            if len(name_data[aid]) < 1:  # n_pubs of current author is too small
+            if len(name_data[aid]) < 5:  # n_pubs of current author is too small
                 continue
             for pid in name_data[aid]:
                 cur_emb = lc_input.get(pid)
@@ -100,11 +98,11 @@ def gen_local_data(idf_threshold):
         n_pubs = len(pids_filter)
         print('n_pubs', n_pubs)
         wf_network = open(join(graph_dir, '{}_pubs_network.txt'.format(name)), 'w')
-        for i in range(n_pubs - 1):
+        for i in range(n_pubs-1):
             if i % 10 == 0:
                 print(i)
             author_feature1 = set(lc_feature.get(pids_filter[i]))
-            for j in range(i + 1, n_pubs):
+            for j in range(i+1, n_pubs):
                 author_feature2 = set(lc_feature.get(pids_filter[j]))
                 common_features = author_feature1.intersection(author_feature2)
                 idf_sum = 0
