@@ -37,7 +37,7 @@ def dump_inter_emb():
         embs_input = []
         pids = []
         for i, aid in enumerate(name_data.keys()):
-            if len(name_data[aid]) < 5:  # n_pubs of current author is too small
+            if len(name_data[aid]) < 1:  # n_pubs of current author is too small
                 continue
             for pid in name_data[aid]:
                 cur_emb = lc_input.get(pid)
@@ -79,7 +79,7 @@ def gen_local_data(idf_threshold):
         wf_content = open(join(graph_dir, '{}_pubs_content.txt'.format(name)), 'w')
         for i, aid in enumerate(cur_person_dict):
             items = cur_person_dict[aid]
-            if len(items) < 1:
+            if len(items) < 5:
                 continue
             for pid in items:
                 pids2label[pid] = aid
