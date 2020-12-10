@@ -37,7 +37,7 @@ def dump_inter_emb():
         embs_input = []
         pids = []
         for i, aid in enumerate(name_data.keys()):
-            if len(name_data[aid]) < 1:  # n_pubs of current author is too small
+            if len(name_data[aid]) < 5:  # n_pubs of current author is too small
                 continue
             for pid in name_data[aid]:
                 cur_emb = lc_input.get(pid)
