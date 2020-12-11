@@ -13,7 +13,7 @@ from utils import data_utils
 from utils import settings
 
 # IDF_THRESHOLD = 32  # small data
-IDF_THRESHOLD = 32
+# IDF_THRESHOLD = 10
 
 
 def dump_inter_emb():
@@ -37,7 +37,7 @@ def dump_inter_emb():
         embs_input = []
         pids = []
         for i, aid in enumerate(name_data.keys()):
-            if len(name_data[aid]) < 1:  # n_pubs of current author is too small
+            if len(name_data[aid]) < 5:  # n_pubs of current author is too small
                 continue
             for pid in name_data[aid]:
                 cur_emb = lc_input.get(pid)
@@ -79,7 +79,7 @@ def gen_local_data(idf_threshold):
         wf_content = open(join(graph_dir, '{}_pubs_content.txt'.format(name)), 'w')
         for i, aid in enumerate(cur_person_dict):
             items = cur_person_dict[aid]
-            if len(items) < 1:
+            if len(items) < 5:
                 continue
             for pid in items:
                 pids2label[pid] = aid
@@ -93,7 +93,6 @@ def gen_local_data(idf_threshold):
                 wf_content.write('{}\t'.format(pid))
                 wf_content.write('\t'.join(cur_pub_emb))
                 wf_content.write('\t{}\n'.format(pids2label[pid]))
-                print(pids2label[pid])
         wf_content.close()
 
         # generate network
@@ -101,11 +100,11 @@ def gen_local_data(idf_threshold):
         n_pubs = len(pids_filter)
         print('n_pubs', n_pubs)
         wf_network = open(join(graph_dir, '{}_pubs_network.txt'.format(name)), 'w')
-        for i in range(n_pubs - 1):
+        for i in range(n_pubs-1):
             if i % 10 == 0:
                 print(i)
             author_feature1 = set(lc_feature.get(pids_filter[i]))
-            for j in range(i + 1, n_pubs):
+            for j in range(i+1, n_pubs):
                 author_feature2 = set(lc_feature.get(pids_filter[j]))
                 common_features = author_feature1.intersection(author_feature2)
                 idf_sum = 0
@@ -121,10 +120,12 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--test_dataset_name", default="whoiswho_new", type=str)
     parser.add_argument("--train_dataset_name", default="whoiswho_new", type=str)
+    parser.add_argument("--idf_threshold", default=32., type=float)
     args = parser.parse_args()
     train_dataset_name = args.train_dataset_name
     test_dataset_name = args.test_dataset_name
-    exp_name = "{}_{}".format(train_dataset_name, test_dataset_name)
+    IDF_THRESHOLD = args.idf_threshold
+    exp_name = "{}_{}_{}".format(train_dataset_name, test_dataset_name, IDF_THRESHOLD)
 
     dump_inter_emb()
     gen_local_data(idf_threshold=IDF_THRESHOLD)
