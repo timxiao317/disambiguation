@@ -41,7 +41,7 @@ flags.DEFINE_string('model', 'gcn_vae', 'Model string.')
 flags.DEFINE_string('name', 'hui_fang', 'Dataset string.')
 flags.DEFINE_string('train_dataset_name', "whoiswho_new", "")
 flags.DEFINE_string('test_dataset_name', "whoiswho_new", "")
-
+flags.DEFINE_float('idf_threshold', 32., "")
 # flags.DEFINE_integer('features', 1, 'Whether to use features (1) or not (0).')
 flags.DEFINE_integer('is_sparse', 0, 'Whether input features are sparse.')
 
@@ -56,7 +56,7 @@ def gae_for_na(name):
     :param name:  author name
     :return: evaluation results
     """
-    adj, features, labels = load_local_data(exp_name, name=name)
+    adj, features, labels = load_local_data(exp_name, IDF_THRESHOLD, name=name)
 
     # Store original adjacency matrix (without diagonal entries) for later
     adj_orig = adj
@@ -167,7 +167,6 @@ def main():
     tp_fp_fn_sum = np.zeros(3)
     for name in names:
         tp_fp_fn, cur_metric, num_nodes, n_clusters = gae_for_na(name)
-
         wf.write('{0},{1},{2},{3:.5f},{4:.5f},{5:.5f},{6:.5f},{7:.5f},{8:.5f},\n'.format(
             name, num_nodes, n_clusters, cur_metric[0], cur_metric[1], cur_metric[2], *tp_fp_fn))
         wf.flush()
@@ -202,5 +201,6 @@ if __name__ == '__main__':
     # args = parser.parse_args()
     train_dataset_name = FLAGS.train_dataset_name
     test_dataset_name = FLAGS.test_dataset_name
-    exp_name = "{}_{}".format(train_dataset_name, test_dataset_name)
+    IDF_THRESHOLD = FLAGS.idf_threshold
+    exp_name = "{}_{}_{}".format(train_dataset_name, test_dataset_name, IDF_THRESHOLD)
     main()
