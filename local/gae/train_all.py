@@ -165,8 +165,8 @@ def main():
     metrics = np.zeros(3)
     cnt = 0
     tp_fp_fn_sum = np.zeros(3)
-    try:
-        for name in names:
+    for name in names:
+        try:
             tp_fp_fn, cur_metric, num_nodes, n_clusters = gae_for_na(name)
             wf.write('{0},{1},{2},{3:.5f},{4:.5f},{5:.5f},{6:.5f},{7:.5f},{8:.5f},\n'.format(
                 name, num_nodes, n_clusters, cur_metric[0], cur_metric[1], cur_metric[2], *tp_fp_fn))
@@ -181,8 +181,8 @@ def main():
             print('average until now', [macro_prec, macro_rec, macro_f1])
             time_acc = time.time() - start_time
             print(cnt, 'names', time_acc, 'avg time', time_acc / cnt)
-    except:
-        continue
+        except:
+            continue
     macro_prec = metrics[0] / cnt
     macro_rec = metrics[1] / cnt
     macro_f1 = cal_f1(macro_prec, macro_rec)
