@@ -96,6 +96,16 @@ def gen_local_data(idf_threshold):
             for pid in items:
                 pids2label[pid] = aid
                 pids.append(pid)
+        if len(pids) <= 1:
+            pids = []
+            pids2label = {}
+            for i, aid in enumerate(cur_person_dict):
+                items = cur_person_dict[aid]
+                if len(items) < 1:
+                    continue
+                for pid in items:
+                    pids2label[pid] = aid
+                    pids.append(pid)
         shuffle(pids)
         for pid in pids:
             cur_pub_emb = lc_inter.get(pid)
