@@ -45,6 +45,18 @@ def dump_inter_emb():
                     continue
                 embs_input.append(cur_emb)
                 pids.append(pid)
+        if len(embs_input) <= 1:
+            embs_input = []
+            pids = []
+            for i, aid in enumerate(name_data.keys()):
+                if len(name_data[aid]) < 1:  # n_pubs of current author is too small
+                    continue
+                for pid in name_data[aid]:
+                    cur_emb = lc_input.get(pid)
+                    if cur_emb is None:
+                        continue
+                    embs_input.append(cur_emb)
+                    pids.append(pid)
         embs_input = np.stack(embs_input)
         inter_embs = get_hidden_output(trained_global_model, embs_input)
         for i, pid_ in enumerate(pids):
