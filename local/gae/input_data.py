@@ -18,6 +18,7 @@ def load_local_data(dataset_name, IDF_THRESHOLD, name='cheng_cheng'):
     print(path)
 
     idx_features_labels = np.genfromtxt(join(path, "{}_pubs_content.txt".format(name)), comments="~~~~~~", dtype=np.dtype(str))
+    print(idx_features_labels)
     features = np.array(idx_features_labels[:, 1:-1], dtype=np.float32)  # sparse?
     labels = encode_labels(idx_features_labels[:, -1])
 
