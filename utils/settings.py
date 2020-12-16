@@ -40,11 +40,11 @@ def get_global_data_dir(DATA_SET_NAME):
     os.makedirs(GLOBAL_DATA_DIR, exist_ok=True)
     return GLOBAL_DATA_DIR
 def get_feature_dir(DATA_SET_NAME):
-    # DATA_DIR = get_data_dir(DATA_SET_NAME)
-    # FEATURE_DIR = join(DATA_DIR, 'features')
-    # os.makedirs(FEATURE_DIR, exist_ok=True)
-    # return FEATURE_DIR
-    return get_overall_feature_dir()
+    DATA_DIR = get_data_dir(DATA_SET_NAME)
+    FEATURE_DIR = join(DATA_DIR, 'features')
+    os.makedirs(FEATURE_DIR, exist_ok=True)
+    return FEATURE_DIR
+    # return get_overall_feature_dir()
 def get_overall_feature_dir():
     os.makedirs(OVER_ALL_FEATURE_DIR, exist_ok=True)
     return OVER_ALL_FEATURE_DIR
