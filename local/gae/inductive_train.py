@@ -127,18 +127,18 @@ def gae_for_na(name):
 
     # Train model
     for epoch in range(FLAGS.epochs):
-        for batch in range(train_name_list)
-        t = time.time()
-        # Construct feed dictionary
-        feed_dict = construct_feed_dict(adj_norm, adj_label, features, placeholders)
-        feed_dict.update({placeholders['dropout']: FLAGS.dropout})
-        # Run single weight update
-        outs = sess.run([opt.opt_op, opt.cost, opt.accuracy],
-                        feed_dict=feed_dict)
+        for batch in range(train_name_list):
+            t = time.time()
+            # Construct feed dictionary
+            feed_dict = construct_feed_dict(adj_norm, adj_label, features, placeholders)
+            feed_dict.update({placeholders['dropout']: FLAGS.dropout})
+            # Run single weight update
+            outs = sess.run([opt.opt_op, opt.cost, opt.accuracy],
+                            feed_dict=feed_dict)
 
-        # Compute average loss
-        avg_cost = outs[1]
-        avg_accuracy = outs[2]
+            # Compute average loss
+            avg_cost = outs[1]
+            avg_accuracy = outs[2]
 
         print("Epoch:", '%04d' % (epoch + 1), "train_loss=", "{:.5f}".format(avg_cost),
               "train_acc=", "{:.5f}".format(avg_accuracy),
