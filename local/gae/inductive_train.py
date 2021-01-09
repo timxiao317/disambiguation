@@ -126,6 +126,7 @@ def gae_for_na(name):
 
     # Train model
     for epoch in range(FLAGS.epochs):
+        for batch in range(train_name_list)
         t = time.time()
         # Construct feed dictionary
         feed_dict = construct_feed_dict(adj_norm, adj_label, features, placeholders)
@@ -152,6 +153,10 @@ def gae_for_na(name):
           'f1', '{:.5f}'.format(f1))
     return [tp, fp, fn], [prec, rec, f1], num_nodes, n_clusters
 
+def load_local_preprocess_result(name):
+    path = join(settings.get_data_dir(exp_name), 'local', 'preprocess-{}'.format(IDF_THRESHOLD), name)
+    with open(path, 'rb') as load:
+        return pickle.load(load)
 
 def load_test_names(dataset_name):
     _, TEST_NAME_LIST = settings.get_split_name_list(dataset_name)
@@ -262,12 +267,17 @@ def train():
 
 
 def main():
-    names = load_test_names(test_dataset_name)
+    train_names, _ = settings.get_split_name_list(train_dataset_name)
+    _, test_names = settings.get_split_name_list(test_dataset_name)
+
     wf = codecs.open(join(settings.get_out_dir(exp_name), 'local_clustering_results.csv'), 'w', encoding='utf-8')
     wf.write('name,n_pubs,n_clusters,precision,recall,f1\n')
     metrics = np.zeros(3)
     cnt = 0
     tp_fp_fn_sum = np.zeros(3)
+
+
+
     for name in names:
         tp_fp_fn, cur_metric, num_nodes, n_clusters = gae_for_na(name)
         wf.write('{0},{1},{2},{3:.5f},{4:.5f},{5:.5f},{6:.5f},{7:.5f},{8:.5f},\n'.format(

@@ -27,7 +27,10 @@ def dump_inter_emb():
     global_model = GlobalTripletModel(train_dataset_name, data_scale=1000000)
     trained_global_model = global_model.load_triplets_model()
     name_to_pubs_test = {}
+    TRAIN_NAME_LIST, _ = settings.get_split_name_list(train_dataset_name)
     _, TEST_NAME_LIST = settings.get_split_name_list(test_dataset_name)
+    for case_name in TRAIN_NAME_LIST:
+        name_to_pubs_test[case_name] = data_utils.load_json(join(settings.get_raw_data_dir(train_dataset_name), case_name), "assignments.json")
     for case_name in TEST_NAME_LIST:
         name_to_pubs_test[case_name] = data_utils.load_json(join(settings.get_raw_data_dir(test_dataset_name), case_name), "assignments.json")
     # name_to_pubs_test = data_utils.load_json(settings.get_global_data_dir(dataset_name), 'name_to_pubs_test_100.json')
@@ -58,7 +61,7 @@ def gen_local_data(idf_threshold):
     """
     name_to_pubs_test = {}
     _, TEST_NAME_LIST = settings.get_split_name_list(test_dataset_name)
-    TRAIN_NAME_LIST, _ = settings.get_split_name_list(test_dataset_name)
+    TRAIN_NAME_LIST, _ = settings.get_split_name_list(train_dataset_name)
     for case_name in TEST_NAME_LIST:
         name_to_pubs_test[case_name] = data_utils.load_json(join(settings.get_raw_data_dir(test_dataset_name), case_name), "assignments.json")
     for case_name in TRAIN_NAME_LIST:
