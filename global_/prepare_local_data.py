@@ -57,8 +57,8 @@ def gen_local_data(idf_threshold):
     :param idf_threshold: threshold for determining whether there exists an edge between two papers (for this demo we set 29)
     """
     name_to_pubs_test = {}
-    _, TEST_NAME_LIST = settings.get_split_name_list(test_dataset_name)
-    for case_name in TEST_NAME_LIST:
+    TRAIN_NAME_LIST, TEST_NAME_LIST = settings.get_split_name_list(test_dataset_name)
+    for case_name in TRAIN_NAME_LIST + TEST_NAME_LIST:
         name_to_pubs_test[case_name] = data_utils.load_json(join(settings.get_raw_data_dir(test_dataset_name), case_name), "assignments.json")
     # name_to_pubs_test = data_utils.load_json(settings.get_global_data_dir(dataset_name), 'name_to_pubs_test_100.json')
     idf = data_utils.load_data(settings.get_feature_dir(train_dataset_name), 'feature_idf.pkl')

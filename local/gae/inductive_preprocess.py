@@ -177,9 +177,27 @@ def preprocess(name):
 
 
 def main():
-    train_names, test_names = load_test_names(test_dataset_name)
-    wf = codecs.open(join(settings.get_out_dir(exp_name), 'local_clustering_results.csv'), 'w', encoding='utf-8')
+    train_names, _ = load_train_test_names(train_dataset_name)
+    _, test_names = load_train_test_names(test_dataset_name)
+    for name in train_names:
+        result = preprocess(name)
+        save_local_preprocess_result(result, name)
+    for name in test_names:
+        result = preprocess()
 
+    # wf = codecs.open(join(settings.get_out_dir(exp_name), 'local_clustering_results.csv'), 'w', encoding='utf-8')
+
+
+def save_local_preprocess_result(result, name):
+    path = join(settings.get_data_dir(dataset_name), 'local', 'preprocess-{}'.format(IDF_THRESHOLD), name)
+    with open(path, 'wb') as save:
+        pickle.dump(result, save)
+
+
+def load_local_preprocess_result(name):
+    path = join(settings.get_data_dir(dataset_name), 'local', 'preprocess-{}'.format(IDF_THRESHOLD), name)
+    with open(path, 'rb') as load:
+        return pickle.load(load)
 
 
 if __name__ == '__main__':
