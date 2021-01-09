@@ -37,7 +37,7 @@ flags.DEFINE_integer('hidden1', 128, 'Number of units in hidden layer 1.')  # 32
 flags.DEFINE_integer('hidden2', 64, 'Number of units in hidden layer 2.')  # 16
 flags.DEFINE_float('weight_decay', 0., 'Weight for L2 loss on embedding matrix.')
 flags.DEFINE_float('dropout', 0., 'Dropout rate (1 - keep probability).')
-flags.DEFINE_integer('input_feature_dim', 100, 'input feature dim')
+flags.DEFINE_integer('input_feature_dim', 64, 'input feature dim')
 flags.DEFINE_string('model', 'gcn_ae', 'Model string.')
 flags.DEFINE_string('name', 'hui_fang', 'Dataset string.')
 flags.DEFINE_string('train_dataset_name', "whoiswho_new", "")
@@ -229,15 +229,15 @@ def train():
               "train_acc=", "{:.5f}".format(epoch_avg_accuracy / len(train_name_list)),
               "time=", "{:.5f}".format(time.time() - t))
 
-    emb = get_embs()
-    n_clusters = len(set(labels))
-    emb_norm = normalize_vectors(emb)
-    clusters_pred = clustering(emb_norm, num_clusters=n_clusters)
-    tp, fp, fn, prec, rec, f1 = pairwise_precision_recall_f1(clusters_pred, labels)
-    print('pairwise precision', '{:.5f}'.format(prec),
-          'recall', '{:.5f}'.format(rec),
-          'f1', '{:.5f}'.format(f1))
-    return [tp, fp, fn], [prec, rec, f1], num_nodes, n_clusters
+    # emb = get_embs()
+    # n_clusters = len(set(labels))
+    # emb_norm = normalize_vectors(emb)
+    # clusters_pred = clustering(emb_norm, num_clusters=n_clusters)
+    # tp, fp, fn, prec, rec, f1 = pairwise_precision_recall_f1(clusters_pred, labels)
+    # print('pairwise precision', '{:.5f}'.format(prec),
+    #       'recall', '{:.5f}'.format(rec),
+    #       'f1', '{:.5f}'.format(f1))
+    # return [tp, fp, fn], [prec, rec, f1], num_nodes, n_clusters
 
 
 
@@ -292,4 +292,5 @@ if __name__ == '__main__':
     test_dataset_name = FLAGS.test_dataset_name
     IDF_THRESHOLD = FLAGS.idf_threshold
     exp_name = "{}_{}_{}".format(train_dataset_name, test_dataset_name, IDF_THRESHOLD)
-    main()
+    # main()
+    train()
