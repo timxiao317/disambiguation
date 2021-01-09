@@ -91,7 +91,7 @@ class GCNModelInductiveAE(Model):
         self.adj = placeholders['adj']
         self.dropout = placeholders['dropout']
         self.pos_weight = placeholders['pos_weight']
-        self.norm, = placeholders['norm']
+        self.norm = placeholders['norm']
         self.build()
 
     def _build(self):
