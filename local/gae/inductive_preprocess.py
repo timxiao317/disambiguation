@@ -66,16 +66,27 @@ def preprocess(name):
     adj_norm = preprocess_graph(adj)
     adj_label = adj_train + sp.eye(adj_train.shape[0])
     adj_label = sparse_to_tuple(adj_label)
-    return adj_norm, adj_label, features
+    if FLAGS.is_sparse:  # TODO to test
+        # features = sparse_to_tuple(features.tocoo())
+        # features_nonzero = features[1].shape[0]
+        features = features.todense()  # TODO
+    else:
+        features = normalize_vectors(features)
+    return adj, adj_norm, adj_label, features
 
 
 def main():
     train_names, _ = settings.get_split_name_list(train_dataset_name)
     _, test_names = settings.get_split_name_list(test_dataset_name)
+    # neg_sum = 0
+    # pos_sum = 0
     for name in train_names + test_names:
-        result = preprocess(name)
-        save_local_preprocess_result(result, name)
-
+        adj, adj_norm, adj_label, features = preprocess(name)
+        # neg_sum += adj.shape[0] * adj.shape[0] - adj.sum()
+        # pos_sum += adj.sum()
+        print(features.shape[1])
+        save_local_preprocess_result((adj_norm, adj_label, features), name)
+    # return neg_sum / pos_sum
     # wf = codecs.open(join(settings.get_out_dir(exp_name), 'local_clustering_results.csv'), 'w', encoding='utf-8')
 
 

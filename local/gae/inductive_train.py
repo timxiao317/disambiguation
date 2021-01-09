@@ -2,6 +2,7 @@ from __future__ import division
 from __future__ import print_function
 
 import argparse
+import pickle
 import sys
 import os
 
@@ -36,7 +37,7 @@ flags.DEFINE_integer('hidden1', 128, 'Number of units in hidden layer 1.')  # 32
 flags.DEFINE_integer('hidden2', 64, 'Number of units in hidden layer 2.')  # 16
 flags.DEFINE_float('weight_decay', 0., 'Weight for L2 loss on embedding matrix.')
 flags.DEFINE_float('dropout', 0., 'Dropout rate (1 - keep probability).')
-
+flags.DEFINE_integer('input_feature_dim', ,'input feature dim')
 flags.DEFINE_string('model', 'gcn_ae', 'Model string.')
 flags.DEFINE_string('name', 'hui_fang', 'Dataset string.')
 flags.DEFINE_string('train_dataset_name', "whoiswho_new", "")
@@ -153,7 +154,7 @@ def gae_for_na(name):
           'f1', '{:.5f}'.format(f1))
     return [tp, fp, fn], [prec, rec, f1], num_nodes, n_clusters
 
-def load_local_preprocess_result(name):
+def load_local_preprocess_result(exp_name, IDF_THRESHOLD, name):
     path = join(settings.get_data_dir(exp_name), 'local', 'preprocess-{}'.format(IDF_THRESHOLD), name)
     with open(path, 'rb') as load:
         return pickle.load(load)
@@ -168,7 +169,6 @@ def train():
         :param name:  author name
         :return: evaluation results
         """
-    adj, features, labels = load_local_data(exp_name, IDF_THRESHOLD, name=name)
 
     # Store original adjacency matrix (without diagonal entries) for later
     adj_orig = adj
@@ -202,8 +202,6 @@ def train():
     model = None
     if model_str == 'gcn_ae':
         model = GCNModelAE(placeholders, input_feature_dim)
-    elif model_str == 'gcn_vae':
-        model = GCNModelVAE(placeholders, input_feature_dim, num_nodes)
     pos_weight = float(adj.shape[0] * adj.shape[0] - adj.sum()) / adj.sum()  # negative edges/pos edges
     print('positive edge weight', pos_weight)
     norm = adj.shape[0] * adj.shape[0] / float((adj.shape[0] * adj.shape[0] - adj.nnz) * 2)
@@ -238,13 +236,15 @@ def train():
 
     # Train model
     for epoch in range(FLAGS.epochs):
-        t = time.time()
-        # Construct feed dictionary
-        feed_dict = construct_feed_dict(adj_norm, adj_label, features, placeholders)
-        feed_dict.update({placeholders['dropout']: FLAGS.dropout})
-        # Run single weight update
-        outs = sess.run([opt.opt_op, opt.cost, opt.accuracy],
-                        feed_dict=feed_dict)
+        for name in train_name_list:
+            adj, features, labels = load_local_preprocess_result(exp_name, IDF_THRESHOLD, name)
+            t = time.time()
+            # Construct feed dictionary
+            feed_dict = construct_feed_dict(adj_norm, adj_label, features, placeholders)
+            feed_dict.update({placeholders['dropout']: FLAGS.dropout})
+            # Run single weight update
+            outs = sess.run([opt.opt_op, opt.cost, opt.accuracy],
+                            feed_dict=feed_dict)
 
         # Compute average loss
         avg_cost = outs[1]
