@@ -93,8 +93,9 @@ def main():
 
 
 def save_local_preprocess_result(result, name):
-    path = join(settings.get_data_dir(exp_name), 'local', 'preprocess-{}'.format(IDF_THRESHOLD), name)
-    with open(path, 'wb') as save:
+    path = join(settings.get_data_dir(exp_name), 'local', 'preprocess-{}'.format(IDF_THRESHOLD))
+    os.makedirs(path, exist_ok=True)
+    with open(join(path, name), 'wb') as save:
         pickle.dump(result, save)
 
 
