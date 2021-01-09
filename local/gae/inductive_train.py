@@ -85,6 +85,8 @@ def gae_for_na(name):
         'adj': tf.sparse_placeholder(tf.float32),
         'adj_orig': tf.sparse_placeholder(tf.float32),
         'dropout': tf.placeholder_with_default(0., shape=())
+        'pos_weight': tf.sparse_placeholder(tf.float32),
+        'norm': tf.sparse_placeholder(tf.float32),
     }
 
     # Create model
