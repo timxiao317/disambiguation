@@ -39,6 +39,17 @@ def construct_feed_dict(adj_normalized, adj, features, placeholders):
     feed_dict.update({placeholders['adj_orig']: adj})
     return feed_dict
 
+def construct_feed_dict_inductive(adj_normalized, adj, features, pos_weight, norm, placeholders):
+    # construct feed dictionary
+    feed_dict = dict()
+    feed_dict.update({placeholders['features']: features})
+    feed_dict.update({placeholders['adj']: adj_normalized})
+    feed_dict.update({placeholders['adj_orig']: adj})
+    feed_dict.update({placeholders['pos_weight']: pos_weight})
+    feed_dict.update({placeholders['norm']: norm})
+    return feed_dict
+
+
 
 def gen_train_edges(adj):
     adj = adj - sp.dia_matrix((adj.diagonal()[np.newaxis, :], [0]), shape=adj.shape)

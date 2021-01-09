@@ -18,11 +18,11 @@ import tensorflow as tf
 import numpy as np
 import scipy.sparse as sp
 
-from local.gae.optimizer import OptimizerAE, OptimizerVAE
+from local.gae.optimizer import OptimizerAE, OptimizerVAE, OptimizerInductiveAE
 from local.gae.input_data import load_local_data
-from local.gae.model import GCNModelAE, GCNModelVAE
+from local.gae.model import GCNModelAE, GCNModelVAE, GCNModelInductiveAE
 from local.gae.preprocessing import preprocess_graph, construct_feed_dict, \
-    sparse_to_tuple, normalize_vectors, gen_train_edges, cal_pos_weight
+    sparse_to_tuple, normalize_vectors, gen_train_edges, cal_pos_weight, construct_feed_dict_inductive
 from utils.cluster import clustering
 from utils.data_utils import load_json
 from utils.eval_utils import pairwise_precision_recall_f1, cal_f1
@@ -37,7 +37,7 @@ flags.DEFINE_integer('hidden1', 128, 'Number of units in hidden layer 1.')  # 32
 flags.DEFINE_integer('hidden2', 64, 'Number of units in hidden layer 2.')  # 16
 flags.DEFINE_float('weight_decay', 0., 'Weight for L2 loss on embedding matrix.')
 flags.DEFINE_float('dropout', 0., 'Dropout rate (1 - keep probability).')
-flags.DEFINE_integer('input_feature_dim', ,'input feature dim')
+flags.DEFINE_integer('input_feature_dim', 100, 'input feature dim')
 flags.DEFINE_string('model', 'gcn_ae', 'Model string.')
 flags.DEFINE_string('name', 'hui_fang', 'Dataset string.')
 flags.DEFINE_string('train_dataset_name', "whoiswho_new", "")
@@ -171,24 +171,6 @@ def train():
         """
 
     # Store original adjacency matrix (without diagonal entries) for later
-    adj_orig = adj
-    adj_orig = adj_orig - sp.dia_matrix((adj_orig.diagonal()[np.newaxis, :], [0]), shape=adj_orig.shape)
-    adj_orig.eliminate_zeros()
-    adj_train = gen_train_edges(adj)
-
-    adj = adj_train
-
-    # Some preprocessing
-    adj_norm = preprocess_graph(adj)
-    num_nodes = adj.shape[0]
-    input_feature_dim = features.shape[1]
-    if FLAGS.is_sparse:  # TODO to test
-        # features = sparse_to_tuple(features.tocoo())
-        # features_nonzero = features[1].shape[0]
-        features = features.todense()  # TODO
-    else:
-        features = normalize_vectors(features)
-
     # Define placeholders
     placeholders = {
         # 'features': tf.sparse_placeholder(tf.float32),
@@ -201,57 +183,50 @@ def train():
     # Create model
     model = None
     if model_str == 'gcn_ae':
-        model = GCNModelAE(placeholders, input_feature_dim)
-    pos_weight = float(adj.shape[0] * adj.shape[0] - adj.sum()) / adj.sum()  # negative edges/pos edges
-    print('positive edge weight', pos_weight)
-    norm = adj.shape[0] * adj.shape[0] / float((adj.shape[0] * adj.shape[0] - adj.nnz) * 2)
+        model = GCNModelInductiveAE(placeholders, input_feature_dim)
 
     # Optimizer
     with tf.name_scope('optimizer'):
         if model_str == 'gcn_ae':
-            opt = OptimizerAE(preds=model.reconstructions,
+            opt = OptimizerInductiveAE(preds=model.reconstructions,
                               labels=tf.reshape(tf.sparse_tensor_to_dense(placeholders['adj_orig'],
                                                                           validate_indices=False), [-1]),
-                              pos_weight=pos_weight,
-                              norm=norm)
-        elif model_str == 'gcn_vae':
-            opt = OptimizerVAE(preds=model.reconstructions,
-                               labels=tf.reshape(tf.sparse_tensor_to_dense(placeholders['adj_orig'],
-                                                                           validate_indices=False), [-1]),
-                               model=model, num_nodes=num_nodes,
-                               pos_weight=pos_weight,
-                               norm=norm)
+                              pos_weight=model.pos_weight,
+                              norm=model.norm)
 
     # Initialize session
     sess = tf.Session()
     sess.run(tf.global_variables_initializer())
 
-    adj_label = adj_train + sp.eye(adj_train.shape[0])
-    adj_label = sparse_to_tuple(adj_label)
 
     def get_embs():
         feed_dict.update({placeholders['dropout']: 0})
         emb = sess.run(model.z_mean, feed_dict=feed_dict)  # z_mean is better
         return emb
 
+    train_name_list, _ = settings.get_split_name_list(train_dataset_name)
+    epoch_avg_cost = 0
+    epoch_avg_accuracy = 0
     # Train model
     for epoch in range(FLAGS.epochs):
         for name in train_name_list:
-            adj, features, labels = load_local_preprocess_result(exp_name, IDF_THRESHOLD, name)
+            adj_norm, adj_label, features, pos_weight, norm = load_local_preprocess_result(exp_name, IDF_THRESHOLD, name)
             t = time.time()
             # Construct feed dictionary
-            feed_dict = construct_feed_dict(adj_norm, adj_label, features, placeholders)
+            feed_dict = construct_feed_dict_inductive(adj_norm, adj_label, features, pos_weight, norm, placeholders)
             feed_dict.update({placeholders['dropout']: FLAGS.dropout})
             # Run single weight update
             outs = sess.run([opt.opt_op, opt.cost, opt.accuracy],
                             feed_dict=feed_dict)
+            # Compute average loss
+            avg_cost = outs[1]
+            avg_accuracy = outs[2]
+            epoch_avg_cost += avg_cost
+            epoch_avg_accuracy += avg_accuracy
 
-        # Compute average loss
-        avg_cost = outs[1]
-        avg_accuracy = outs[2]
 
-        print("Epoch:", '%04d' % (epoch + 1), "train_loss=", "{:.5f}".format(avg_cost),
-              "train_acc=", "{:.5f}".format(avg_accuracy),
+        print("Epoch:", '%04d' % (epoch + 1), "train_loss=", "{:.5f}".format(epoch_avg_cost / len(train_name_list)),
+              "train_acc=", "{:.5f}".format(epoch_avg_accuracy / len(train_name_list)),
               "time=", "{:.5f}".format(time.time() - t))
 
     emb = get_embs()
@@ -312,6 +287,7 @@ if __name__ == '__main__':
     # parser = argparse.ArgumentParser()
     # parser.add_argument("--dataset_name", default="whoiswho_new", type=str)
     # args = parser.parse_args()
+    input_feature_dim = FLAGS.input_feature_dim
     train_dataset_name = FLAGS.train_dataset_name
     test_dataset_name = FLAGS.test_dataset_name
     IDF_THRESHOLD = FLAGS.idf_threshold
