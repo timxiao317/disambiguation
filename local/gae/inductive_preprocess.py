@@ -154,10 +154,6 @@ def gae_for_na(name):
     return [tp, fp, fn], [prec, rec, f1], num_nodes, n_clusters
 
 
-def load_train_test_names(dataset_name):
-    TRAIN_NAME_LIST, TEST_NAME_LIST = settings.get_split_name_list(dataset_name)
-    return TRAIN_NAME_LIST, TEST_NAME_LIST
-
 def preprocess(name):
     adj, features, labels = load_local_data(exp_name, IDF_THRESHOLD, name=name)
 
@@ -173,29 +169,27 @@ def preprocess(name):
     adj_norm = preprocess_graph(adj)
     adj_label = adj_train + sp.eye(adj_train.shape[0])
     adj_label = sparse_to_tuple(adj_label)
-    return adj_train, adj_label, features
+    return adj_norm, adj_label, features
 
 
 def main():
-    train_names, _ = load_train_test_names(train_dataset_name)
-    _, test_names = load_train_test_names(test_dataset_name)
-    for name in train_names:
+    train_names, _ = settings.get_split_name_list(train_dataset_name)
+    _, test_names = settings.get_split_name_list(test_dataset_name)
+    for name in train_names + test_names:
         result = preprocess(name)
         save_local_preprocess_result(result, name)
-    for name in test_names:
-        result = preprocess()
 
     # wf = codecs.open(join(settings.get_out_dir(exp_name), 'local_clustering_results.csv'), 'w', encoding='utf-8')
 
 
 def save_local_preprocess_result(result, name):
-    path = join(settings.get_data_dir(dataset_name), 'local', 'preprocess-{}'.format(IDF_THRESHOLD), name)
+    path = join(settings.get_data_dir(exp_name), 'local', 'preprocess-{}'.format(IDF_THRESHOLD), name)
     with open(path, 'wb') as save:
         pickle.dump(result, save)
 
 
 def load_local_preprocess_result(name):
-    path = join(settings.get_data_dir(dataset_name), 'local', 'preprocess-{}'.format(IDF_THRESHOLD), name)
+    path = join(settings.get_data_dir(exp_name), 'local', 'preprocess-{}'.format(IDF_THRESHOLD), name)
     with open(path, 'rb') as load:
         return pickle.load(load)
 
