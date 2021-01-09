@@ -84,8 +84,7 @@ class GCNModelAE(Model):
 
 class GCNModelInductiveAE(Model):
     def __init__(self, placeholders, num_features, features_nonzero=None, **kwargs):
-        super(GCNModelAE, self).__init__(**kwargs)
-
+        super(GCNModelInductiveAE, self).__init__(**kwargs)
         self.inputs = placeholders['features']
         self.input_dim = num_features
         self.features_nonzero = features_nonzero
