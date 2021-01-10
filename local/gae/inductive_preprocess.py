@@ -89,7 +89,7 @@ def main():
         # neg_sum += adj.shape[0] * adj.shape[0] - adj.sum()
         # pos_sum += adj.sum()
         print(features.shape[1])
-        save_local_preprocess_result((adj_norm, adj_label, features), name)
+        save_local_preprocess_result((adj_norm, adj_label, features, pos_weight, norm), name)
     # return neg_sum / pos_sum
     # wf = codecs.open(join(settings.get_out_dir(exp_name), 'local_clustering_results.csv'), 'w', encoding='utf-8')
 
