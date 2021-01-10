@@ -110,7 +110,7 @@ def train():
     for epoch in range(FLAGS.epochs):
         for name in train_name_list:
             adj_norm, adj_label, features, pos_weight, norm = load_local_preprocess_result(exp_name, IDF_THRESHOLD, name)
-            print('positive edge weight', pos_weight)  # negative edges/pos edges
+            # print('positive edge weight', pos_weight)  # negative edges/pos edges
             t = time.time()
             # Construct feed dictionary
             feed_dict = construct_feed_dict_inductive(adj_norm, adj_label, features, pos_weight, norm, placeholders)
