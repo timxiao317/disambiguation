@@ -123,6 +123,7 @@ def train():
             avg_accuracy = outs[2]
             epoch_avg_cost += avg_cost
             epoch_avg_accuracy += avg_accuracy
+            print(avg_cost, avg_accuracy)
 
 
         print("Epoch:", '%04d' % (epoch + 1), "train_loss=", "{:.5f}".format(epoch_avg_cost / len(train_name_list)),
