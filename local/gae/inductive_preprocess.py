@@ -72,8 +72,10 @@ def preprocess(name):
         features = features.todense()  # TODO
     else:
         features = normalize_vectors(features)
-    pos_weight = float(adj.shape[0] * adj.shape[0] - adj.sum()) / adj.sum()  # negative edges/pos edges
+    pos_weight = float(adj.shape[0] * adj.shape[0] - adj.sum()) / adj.sum()
+    print('positive edge weight', pos_weight)    # negative edges/pos edges
     norm = adj.shape[0] * adj.shape[0] / float((adj.shape[0] * adj.shape[0] - adj.nnz) * 2)
+    print('norm', norm)    # negative edges/pos edges
     return adj_norm, adj_label, features, pos_weight, norm
 
 
