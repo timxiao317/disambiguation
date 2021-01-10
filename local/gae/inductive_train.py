@@ -76,7 +76,7 @@ def train():
         'adj': tf.sparse_placeholder(tf.float32),
         'adj_orig': tf.sparse_placeholder(tf.float32),
         'dropout': tf.placeholder_with_default(0., shape=()),
-        'pos_weight': tf.sparse_placeholder(tf.float32),
+        'pos_weight': tf.sparse_placeholder(tf.float32, shape=()),
         'norm': tf.sparse_placeholder(tf.float32),
     }
 
