@@ -42,7 +42,7 @@ def dump_inter_emb():
         embs_input = []
         pids = []
         for i, aid in enumerate(name_data.keys()):
-            print(len(name_data[aid]))
+            # print(len(name_data[aid]))
             if len(name_data[aid]) < 5:  # n_pubs of current author is too small
                 continue
             for pid in name_data[aid]:
@@ -61,7 +61,7 @@ def dump_inter_emb():
         embs_input = []
         pids = []
         for i, aid in enumerate(name_data.keys()):
-            print(len(name_data[aid]))
+            # print(len(name_data[aid]))
             if len(name_data[aid]) < 5:  # n_pubs of current author is too small
                 continue
             for pid in name_data[aid]:
