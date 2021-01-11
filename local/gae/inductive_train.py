@@ -95,7 +95,7 @@ def main():
                               pos_weight=model.pos_weight,
                               norm=model.norm)
 
-    saver = tf.main.Saver()
+    saver = tf.train.Saver()
     # Initialize session
     sess = tf.Session()
     sess.run(tf.global_variables_initializer())
