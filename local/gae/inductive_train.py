@@ -42,9 +42,11 @@ flags.DEFINE_string('model', 'gcn_ae', 'Model string.')
 flags.DEFINE_string('name', 'hui_fang', 'Dataset string.')
 flags.DEFINE_string('train_dataset_name', "whoiswho_new", "")
 flags.DEFINE_string('test_dataset_name', "whoiswho_new", "")
+flags.DEFINE_string('model_name', "baseline", "")
 flags.DEFINE_float('idf_threshold', 0., "")
 # flags.DEFINE_integer('features', 1, 'Whether to use features (1) or not (0).')
 flags.DEFINE_integer('is_sparse', 0, 'Whether input features are sparse.')
+
 
 model_str = FLAGS.model
 name_str = FLAGS.name
@@ -61,7 +63,7 @@ def load_test_names(dataset_name):
     _, TEST_NAME_LIST = settings.get_split_name_list(dataset_name)
     return TEST_NAME_LIST
 
-def train():
+def main():
     """
         train and evaluate YUTAO results for a specific name
         :param name:  author name
@@ -93,6 +95,7 @@ def train():
                               pos_weight=model.pos_weight,
                               norm=model.norm)
 
+    saver = tf.main.Saver()
     # Initialize session
     sess = tf.Session()
     sess.run(tf.global_variables_initializer())
@@ -104,12 +107,14 @@ def train():
         return emb
 
     train_name_list, _ = settings.get_split_name_list(train_dataset_name)
+    _, test_name_list = settings.get_split_name_list(test_dataset_name)
+
     # Train model
     for epoch in range(FLAGS.epochs):
         epoch_avg_cost = 0
         epoch_avg_accuracy = 0
         for name in train_name_list:
-            adj_norm, adj_label, features, pos_weight, norm = load_local_preprocess_result(exp_name, IDF_THRESHOLD, name)
+            adj_norm, adj_label, features, pos_weight, norm, labels = load_local_preprocess_result(exp_name, IDF_THRESHOLD, name)
             # print('positive edge weight', pos_weight)  # negative edges/pos edges
             t = time.time()
             # Construct feed dictionary
@@ -129,7 +134,29 @@ def train():
         print("Epoch:", '%04d' % (epoch + 1), "train_loss=", "{:.5f}".format(epoch_avg_cost / len(train_name_list)),
               "train_acc=", "{:.5f}".format(epoch_avg_accuracy / len(train_name_list)),
               "time=", "{:.5f}".format(time.time() - t))
-
+        metrics = np.zeros(3)
+        tp_fp_fn_sum = np.zeros(3)
+        for name in test_name_list:
+            adj_norm, adj_label, features, pos_weight, norm, labels = load_local_preprocess_result(exp_name, IDF_THRESHOLD, name)
+            feed_dict = construct_feed_dict_inductive(adj_norm, adj_label, features, pos_weight, norm, placeholders)
+            emb = get_embs()
+            n_clusters = len(set(labels))
+            emb_norm = normalize_vectors(emb)
+            clusters_pred = clustering(emb_norm, num_clusters=n_clusters)
+            tp, fp, fn, prec, rec, f1 = pairwise_precision_recall_f1(clusters_pred, labels)
+            tp_fp_fn_sum += np.array([tp, fp, fn])
+            metrics += np.array([prec, rec, f1])
+        macro_prec = metrics[0] / len(test_name_list)
+        macro_rec = metrics[1] / len(test_name_list)
+        macro_f1 = cal_f1(macro_prec, macro_rec)
+        tp, fp, fn = tp_fp_fn_sum
+        micro_precision = tp / (tp + fp)
+        micro_recall = tp / (tp + fn)
+        micro_f1 = 2 * micro_precision * micro_recall / (micro_precision + micro_recall)
+        print('average,,,{0:.5f},{1:.5f},{2:.5f},{3:.5f},{4:5f},{5:5f}\n'.format(
+            macro_prec, macro_rec, macro_f1, micro_precision, micro_recall, micro_f1))
+    path = join(settings.get_data_dir(exp_name), 'local', 'model-{}'.format(IDF_THRESHOLD), model_name)
+    saver.save(sess, path)
     # emb = get_embs()
     # n_clusters = len(set(labels))
     # emb_norm = normalize_vectors(emb)
@@ -148,10 +175,11 @@ if __name__ == '__main__':
     # parser = argparse.ArgumentParser()
     # parser.add_argument("--dataset_name", default="whoiswho_new", type=str)
     # args = parser.parse_args()
+    model_name = FLAGS.model_name
     input_feature_dim = FLAGS.input_feature_dim
     train_dataset_name = FLAGS.train_dataset_name
     test_dataset_name = FLAGS.test_dataset_name
     IDF_THRESHOLD = FLAGS.idf_threshold
     exp_name = "{}_{}_{}".format(train_dataset_name, test_dataset_name, IDF_THRESHOLD)
     # main()
-    train()
+    main()

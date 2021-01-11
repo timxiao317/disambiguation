@@ -86,7 +86,7 @@ def preprocess(name):
     # print("positive_label", len(edge_labels))
     print('positive edge weight', pos_weight)    # negative edges/pos edges
     print('norm', norm)    # negative edges/pos edges
-    return adj_norm, adj_label, features, pos_weight, norm
+    return adj_norm, adj_label, features, pos_weight, norm, labels
 
 
 def main():
@@ -95,11 +95,11 @@ def main():
     # neg_sum = 0
     # pos_sum = 0
     for name in train_names + test_names:
-        adj_norm, adj_label, features, pos_weight, norm = preprocess(name)
+        adj_norm, adj_label, features, pos_weight, norm, labels = preprocess(name)
         # neg_sum += adj.shape[0] * adj.shape[0] - adj.sum()
         # pos_sum += adj.sum()
-        print(features.shape[1])
-        save_local_preprocess_result((adj_norm, adj_label, features, pos_weight, norm), name)
+        # print(features.shape[1])
+        save_local_preprocess_result((adj_norm, adj_label, features, pos_weight, norm, labels), name)
     # return neg_sum / pos_sum
     # wf = codecs.open(join(settings.get_out_dir(exp_name), 'local_clustering_results.csv'), 'w', encoding='utf-8')
 
