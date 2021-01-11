@@ -73,8 +73,8 @@ def preprocess(name):
     edge_labels = np.array(edge_labels)
     adj_label = sp.coo_matrix((np.ones(edge_labels.shape[0]), (edge_labels[:, 0], edge_labels[:, 1])),
                                        shape=(features.shape[0], features.shape[0]), dtype=np.float32)
-    pos_weight = float(adj.shape[0] * adj.shape[0] - adj.sum()) / adj.sum()
-    norm = adj.shape[0] * adj.shape[0] / float((adj.shape[0] * adj.shape[0] - adj.nnz) * 2)
+    pos_weight = float(adj_label.shape[0] * adj_label.shape[0] - adj_label.sum()) / adj_label.sum()
+    norm = adj_label.shape[0] * adj_label.shape[0] / float((adj_label.shape[0] * adj_label.shape[0] - adj_label.nnz) * 2)
     adj_label = adj_label + sp.eye(adj_label.shape[0])
     adj_label = sparse_to_tuple(adj_label)
     if FLAGS.is_sparse:  # TODO to test
