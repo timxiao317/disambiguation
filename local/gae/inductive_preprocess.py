@@ -64,7 +64,16 @@ def preprocess(name):
 
     # Some preprocessing
     adj_norm = preprocess_graph(adj)
-    adj_label = adj_train + sp.eye(adj_train.shape[0])
+    edge_labels = []
+    n_samples = len(labels)
+    for i in range(n_samples - 1):
+        for j in range(i + 1, n_samples):
+            if labels[i] == labels[j]:
+                edge_labels.append([i, j])
+    edge_labels = np.array(edge_labels)
+    adj_label = sp.coo_matrix((np.ones(edge_labels.shape[0]), (edge_labels[:, 0], edge_labels[:, 1])),
+                                       shape=(features.shape[0], features.shape[0]), dtype=np.float32)
+    adj_label = adj_label + sp.eye(adj_label.shape[0])
     adj_label = sparse_to_tuple(adj_label)
     if FLAGS.is_sparse:  # TODO to test
         # features = sparse_to_tuple(features.tocoo())
