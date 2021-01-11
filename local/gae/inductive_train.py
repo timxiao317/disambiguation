@@ -156,7 +156,7 @@ def main():
         micro_precision = tp / (tp + fp)
         micro_recall = tp / (tp + fn)
         micro_f1 = 2 * micro_precision * micro_recall / (micro_precision + micro_recall)
-        print('average,acc:{0:.5f},macro_prec:{0:.5f},macro_rec:{1:.5f},macro_f1:{2:.5f},micro_precision:{3:.5f},micro_recall:{4:5f},micro_f1:{5:5f}\n'.format(
+        print('average,acc:{0:.5f},macro_prec:{1:.5f},macro_rec:{2:.5f},macro_f1:{3:.5f},micro_precision:{4:.5f},micro_recall:{5:5f},micro_f1:{6:5f}\n'.format(
             avg_acc, macro_prec, macro_rec, macro_f1, micro_precision, micro_recall, micro_f1))
     path = join(settings.get_data_dir(exp_name), 'local', 'model-{}'.format(IDF_THRESHOLD), model_name)
     saver.save(sess, path)
