@@ -48,6 +48,7 @@ def dump_inter_emb():
                     continue
                 embs_input.append(cur_emb)
                 pids.append(pid)
+        print(name_data)
         embs_input = np.stack(embs_input)
         inter_embs = get_hidden_output(trained_global_model, embs_input)
         for i, pid_ in enumerate(pids):
