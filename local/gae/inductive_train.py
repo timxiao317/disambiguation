@@ -35,8 +35,8 @@ flags.DEFINE_float('learning_rate', 0.001, 'Initial learning rate.')
 flags.DEFINE_integer('epochs', 200, 'Number of epochs to train.')
 flags.DEFINE_integer('hidden1', 128, 'Number of units in hidden layer 1.')  # 32
 flags.DEFINE_integer('hidden2', 64, 'Number of units in hidden layer 2.')  # 16
-flags.DEFINE_float('weight_decay', 0.01, 'Weight for L2 loss on embedding matrix.')
-flags.DEFINE_float('dropout', 0.25, 'Dropout rate (1 - keep probability).')
+flags.DEFINE_float('weight_decay', 0., 'Weight for L2 loss on embedding matrix.')
+flags.DEFINE_float('dropout', 0., 'Dropout rate (1 - keep probability).')
 flags.DEFINE_integer('input_feature_dim', 64, 'input feature dim')
 flags.DEFINE_string('model', 'gcn_ae', 'Model string.')
 flags.DEFINE_string('name', 'hui_fang', 'Dataset string.')
