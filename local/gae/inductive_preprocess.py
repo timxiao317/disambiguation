@@ -73,6 +73,8 @@ def preprocess(name):
     edge_labels = np.array(edge_labels)
     adj_label = sp.coo_matrix((np.ones(edge_labels.shape[0]), (edge_labels[:, 0], edge_labels[:, 1])),
                                        shape=(features.shape[0], features.shape[0]), dtype=np.float32)
+    pos_weight = float(adj.shape[0] * adj.shape[0] - adj.sum()) / adj.sum()
+    norm = adj.shape[0] * adj.shape[0] / float((adj.shape[0] * adj.shape[0] - adj.nnz) * 2)
     adj_label = adj_label + sp.eye(adj_label.shape[0])
     adj_label = sparse_to_tuple(adj_label)
     if FLAGS.is_sparse:  # TODO to test
@@ -81,10 +83,8 @@ def preprocess(name):
         features = features.todense()  # TODO
     else:
         features = normalize_vectors(features)
-    pos_weight = float(adj.shape[0] * adj.shape[0] - adj.sum()) / adj.sum()
-    print("positive_label", len(edge_labels))
+    # print("positive_label", len(edge_labels))
     print('positive edge weight', pos_weight)    # negative edges/pos edges
-    norm = adj.shape[0] * adj.shape[0] / float((adj.shape[0] * adj.shape[0] - adj.nnz) * 2)
     print('norm', norm)    # negative edges/pos edges
     return adj_norm, adj_label, features, pos_weight, norm
 
