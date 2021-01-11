@@ -101,10 +101,10 @@ def main():
     sess.run(tf.global_variables_initializer())
 
 
-    def get_embs():
+    def infer():
         feed_dict.update({placeholders['dropout']: 0})
-        emb = sess.run(model.z_mean, feed_dict=feed_dict)  # z_mean is better
-        return emb
+        acc, emb = sess.run([opt.accuracy, model.z_mean], feed_dict=feed_dict)  # z_mean is better
+        return acc, emb
 
     train_name_list, _ = settings.get_split_name_list(train_dataset_name)
     _, test_name_list = settings.get_split_name_list(test_dataset_name)
@@ -136,28 +136,31 @@ def main():
               "time=", "{:.5f}".format(time.time() - t))
         metrics = np.zeros(3)
         tp_fp_fn_sum = np.zeros(3)
+        avg_acc = 0
         for name in test_name_list:
             adj_norm, adj_label, features, pos_weight, norm, labels = load_local_preprocess_result(exp_name, IDF_THRESHOLD, name)
             feed_dict = construct_feed_dict_inductive(adj_norm, adj_label, features, pos_weight, norm, placeholders)
-            emb = get_embs()
+            acc, emb = infer()
             n_clusters = len(set(labels))
             emb_norm = normalize_vectors(emb)
             clusters_pred = clustering(emb_norm, num_clusters=n_clusters)
             tp, fp, fn, prec, rec, f1 = pairwise_precision_recall_f1(clusters_pred, labels)
             tp_fp_fn_sum += np.array([tp, fp, fn])
             metrics += np.array([prec, rec, f1])
+            avg_acc += acc
         macro_prec = metrics[0] / len(test_name_list)
         macro_rec = metrics[1] / len(test_name_list)
+        avg_acc /= len(test_name_list)
         macro_f1 = cal_f1(macro_prec, macro_rec)
         tp, fp, fn = tp_fp_fn_sum
         micro_precision = tp / (tp + fp)
         micro_recall = tp / (tp + fn)
         micro_f1 = 2 * micro_precision * micro_recall / (micro_precision + micro_recall)
-        print('average,macro_prec:{0:.5f},macro_rec:{1:.5f},macro_f1:{2:.5f},micro_precision:{3:.5f},micro_recall:{4:5f},micro_f1:{5:5f}\n'.format(
-            macro_prec, macro_rec, macro_f1, micro_precision, micro_recall, micro_f1))
+        print('average,acc:{0:.5f},macro_prec:{0:.5f},macro_rec:{1:.5f},macro_f1:{2:.5f},micro_precision:{3:.5f},micro_recall:{4:5f},micro_f1:{5:5f}\n'.format(
+            avg_acc, macro_prec, macro_rec, macro_f1, micro_precision, micro_recall, micro_f1))
     path = join(settings.get_data_dir(exp_name), 'local', 'model-{}'.format(IDF_THRESHOLD), model_name)
     saver.save(sess, path)
-    # emb = get_embs()
+    # emb = infer()
     # n_clusters = len(set(labels))
     # emb_norm = normalize_vectors(emb)
     # clusters_pred = clustering(emb_norm, num_clusters=n_clusters)
