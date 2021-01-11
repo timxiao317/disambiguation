@@ -144,6 +144,52 @@ def gen_local_data(idf_threshold):
                 if idf_sum >= idf_threshold:
                     wf_network.write('{}\t{}\n'.format(pids_filter[i], pids_filter[j]))
         wf_network.close()
+    for i, name in enumerate(name_to_pubs_train):
+        print(i, name)
+        cur_person_dict = name_to_pubs_train[name]
+        pids_set = set()
+        pids = []
+        pids2label = {}
+
+        # generate content
+        wf_content = open(join(graph_dir, '{}_pubs_content.txt'.format(name)), 'w')
+        for i, aid in enumerate(cur_person_dict):
+            items = cur_person_dict[aid]
+            if len(items) < 5:
+                continue
+            for pid in items:
+                pids2label[pid] = aid
+                pids.append(pid)
+        shuffle(pids)
+        for pid in pids:
+            cur_pub_emb = lc_inter.get(pid)
+            if cur_pub_emb is not None:
+                cur_pub_emb = list(map(str, cur_pub_emb))
+                pids_set.add(pid)
+                wf_content.write('{}\t'.format(pid))
+                wf_content.write('\t'.join(cur_pub_emb))
+                wf_content.write('\t{}\n'.format(pids2label[pid]))
+        wf_content.close()
+
+        # generate network
+        pids_filter = list(pids_set)
+        n_pubs = len(pids_filter)
+        print('n_pubs', n_pubs)
+        wf_network = open(join(graph_dir, '{}_pubs_network.txt'.format(name)), 'w')
+        for i in range(n_pubs-1):
+            if i % 10 == 0:
+                print(i)
+            author_feature1 = set(lc_feature_train.get(pids_filter[i]))
+            for j in range(i+1, n_pubs):
+                author_feature2 = set(lc_feature_train.get(pids_filter[j]))
+                common_features = author_feature1.intersection(author_feature2)
+                idf_sum = 0
+                for f in common_features:
+                    idf_sum += idf.get(f, idf_threshold)
+                    # print(f, idf.get(f, idf_threshold))
+                if idf_sum >= idf_threshold:
+                    wf_network.write('{}\t{}\n'.format(pids_filter[i], pids_filter[j]))
+        wf_network.close()
 
 
 if __name__ == '__main__':
