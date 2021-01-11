@@ -21,16 +21,18 @@ def dump_inter_emb():
     dump hidden embedding via trained global model for local model to use
     """
     LMDB_NAME = "author_100.emb.weighted"
-    lc_input = LMDBClient(test_dataset_name, LMDB_NAME)
+    lc_input_train = LMDBClient(train_dataset_name, LMDB_NAME)
+    lc_input_test = LMDBClient(test_dataset_name, LMDB_NAME)
     INTER_LMDB_NAME = 'author_triplets.emb'
     lc_inter = LMDBClient(exp_name, INTER_LMDB_NAME)
     global_model = GlobalTripletModel(train_dataset_name, data_scale=1000000)
     trained_global_model = global_model.load_triplets_model()
     name_to_pubs_test = {}
+    name_to_pubs_train = {}
     TRAIN_NAME_LIST, _ = settings.get_split_name_list(train_dataset_name)
     _, TEST_NAME_LIST = settings.get_split_name_list(test_dataset_name)
     for case_name in TRAIN_NAME_LIST:
-        name_to_pubs_test[case_name] = data_utils.load_json(join(settings.get_raw_data_dir(train_dataset_name), case_name), "assignments.json")
+        name_to_pubs_train[case_name] = data_utils.load_json(join(settings.get_raw_data_dir(train_dataset_name), case_name), "assignments.json")
     for case_name in TEST_NAME_LIST:
         name_to_pubs_test[case_name] = data_utils.load_json(join(settings.get_raw_data_dir(test_dataset_name), case_name), "assignments.json")
     # name_to_pubs_test = data_utils.load_json(settings.get_global_data_dir(dataset_name), 'name_to_pubs_test_100.json')
@@ -44,7 +46,7 @@ def dump_inter_emb():
             if len(name_data[aid]) < 5:  # n_pubs of current author is too small
                 continue
             for pid in name_data[aid]:
-                cur_emb = lc_input.get(pid)
+                cur_emb = lc_input_test.get(pid)
                 if cur_emb is None:
                     continue
                 embs_input.append(cur_emb)
@@ -53,7 +55,25 @@ def dump_inter_emb():
         inter_embs = get_hidden_output(trained_global_model, embs_input)
         for i, pid_ in enumerate(pids):
             lc_inter.set(pid_, inter_embs[i])
-
+    for name in name_to_pubs_train:
+        print('name', name)
+        name_data = name_to_pubs_train[name]
+        embs_input = []
+        pids = []
+        for i, aid in enumerate(name_data.keys()):
+            print(len(name_data[aid]))
+            if len(name_data[aid]) < 5:  # n_pubs of current author is too small
+                continue
+            for pid in name_data[aid]:
+                cur_emb = lc_input_train.get(pid)
+                if cur_emb is None:
+                    continue
+                embs_input.append(cur_emb)
+                pids.append(pid)
+        embs_input = np.stack(embs_input)
+        inter_embs = get_hidden_output(trained_global_model, embs_input)
+        for i, pid_ in enumerate(pids):
+            lc_inter.set(pid_, inter_embs[i])
 
 def gen_local_data(idf_threshold):
     """
